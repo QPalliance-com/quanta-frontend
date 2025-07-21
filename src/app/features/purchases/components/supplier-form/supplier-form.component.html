@@ -1,0 +1,110 @@
+<p-toast></p-toast>
+
+<div class="card flex flex-col gap-6 w-full">
+    <h2 class="text-2xl font-semibold mb-6">Formulario Proveedor</h2>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="grid grid-cols-1 gap-6">
+        <!-- 🧍 Información de contacto -->
+        <fieldset class="border p-4 rounded">
+            <legend class="text-sm font-bold text-gray-600 px-2">Información de contacto</legend>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                <div>
+                    <label for="contactName" class="text-sm mb-1 block">Nombre de contacto</label>
+                    <input pInputText fluid id="contactName" formControlName="contactName" />
+                </div>
+                <div>
+                    <label for="email" class="text-sm mb-1 block">Correo electrónico</label>
+                    <input pInputText fluid id="email" formControlName="email" type="email" />
+                </div>
+                <div>
+                    <label for="phone" class="text-sm mb-1 block">Teléfono</label>
+                    <input pInputText fluid id="phone" formControlName="phone" type="tel" />
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- 🏢 Información de la empresa -->
+        <fieldset class="border p-4 rounded">
+            <legend class="text-sm font-bold text-gray-600 px-2">Empresa</legend>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                <div>
+                    <label for="companyName" class="text-sm mb-1 block">Nombre empresa</label>
+                    <input pInputText fluid id="companyName" formControlName="companyName" />
+                </div>
+                <div>
+                    <label for="address" class="text-sm mb-1 block">Dirección</label>
+                    <input pInputText fluid id="address" formControlName="address" />
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- 🧾 Documento -->
+        <fieldset class="border p-4 rounded">
+            <legend class="text-sm font-bold text-gray-600 px-2">Identificación</legend>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                <div>
+                    <label for="documentType" class="text-sm mb-1 block">Tipo de documento</label>
+                    <p-select fluid inputId="documentType" formControlName="documentType" [options]="documentTypes" optionLabel="label" optionValue="value" showFilter placeholder="Seleccionar"></p-select>
+                </div>
+                <div>
+                    <label for="documentNumber" class="text-sm mb-1 block">Número de documento</label>
+                    <input pInputText fluid id="documentNumber" formControlName="documentNumber" />
+                </div>
+                <div *ngIf="form.get('documentType')?.value === 'NIT'">
+                    <label for="dv" class="text-sm mb-1 block">Dígito de verificación</label>
+                    <input pInputText fluid id="dv" formControlName="dv" />
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- 🧭 Ubicación -->
+        <fieldset class="border p-4 rounded">
+            <legend class="text-sm font-bold text-gray-600 px-2">Ubicación</legend>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                <div>
+                    <label for="departmentId" class="text-sm mb-1 block">Departamento</label>
+                    <p-select
+                        fluid
+                        inputId="departmentId"
+                        formControlName="departmentId"
+                        [options]="departments"
+                        optionLabel="name"
+                        optionValue="id"
+                        showFilter
+                        placeholder="Seleccionar departamento"
+                        (onChange)="onDepartmentChange($event.value)"
+                    ></p-select>
+                </div>
+                <div>
+                    <label for="cityId" class="text-sm mb-1 block">Ciudad</label>
+                    <p-select fluid inputId="cityId" formControlName="cityId" [options]="cities" optionLabel="name" optionValue="id" showFilter placeholder="Seleccionar ciudad"></p-select>
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- 💳 Condiciones comerciales -->
+        <fieldset class="border p-4 rounded">
+            <legend class="text-sm font-bold text-gray-600 px-2">Condiciones comerciales</legend>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+                <div>
+                    <label for="paymentTerm" class="text-sm mb-1 block">Plazo de pago</label>
+                    <p-select fluid inputId="paymentTerm" formControlName="paymentTerm" [options]="paymentTerms" optionLabel="label" optionValue="value" showFilter placeholder="Seleccionar"></p-select>
+                </div>
+                <div>
+                    <label for="creditLimit" class="text-sm mb-1 block">Límite de crédito</label>
+                    <input pInputText fluid id="creditLimit" type="number" formControlName="creditLimit" />
+                </div>
+                <div>
+                    <label for="salesRep" class="text-sm mb-1 block">Vendedor asignado</label>
+                    <input pInputText fluid id="salesRep" formControlName="salesRep" />
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- Botones -->
+        <div class="flex justify-end gap-3 mt-6">
+            <button pButton type="button" class="p-button-secondary" (click)="cancel()">Cancelar</button>
+            <button pButton type="submit" label="Guardar" [disabled]="form.invalid"></button>
+        </div>
+    </form>
+</div>

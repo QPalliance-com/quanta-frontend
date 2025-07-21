@@ -1,0 +1,302 @@
+src/
+├── app/
+│   ├── core/
+│   │   ├── guards/
+│   │   │   ├── auth.guard.ts
+│   │   │   ├── role.guard.ts
+│   │   │   └── mfa.guard.ts
+│   │   ├── interceptors/
+│   │   │   ├── auth.interceptor.ts
+│   │   │   ├── error.interceptor.ts
+│   │   │   └── loading.interceptor.ts
+│   │   ├── services/
+│   │   │   ├── auth.service.ts
+│   │   │   ├── notification.service.ts
+│   │   │   ├── websocket.service.ts
+│   │   │   ├── export.service.ts
+│   │   │   └── audit.service.ts
+│   │   ├── models/
+│   │   │   ├── user.model.ts
+│   │   │   ├── role.model.ts
+│   │   │   └── api-response.model.ts
+│   │   └── core.module.ts
+│   │
+│   ├── shared/
+│   │   ├── components/
+│   │   │   ├── layout/
+│   │   │   │   ├── header/
+│   │   │   │   ├── sidebar/
+│   │   │   │   ├── footer/
+│   │   │   │   └── main-layout/
+│   │   │   ├── ui/
+│   │   │   │   ├── data-table/
+│   │   │   │   ├── modal/
+│   │   │   │   ├── loader/
+│   │   │   │   ├── notification/
+│   │   │   │   ├── search-filter/
+│   │   │   │   ├── date-picker/
+│   │   │   │   └── charts/
+│   │   │   └── forms/
+│   │   │       ├── dynamic-form/
+│   │   │       ├── form-field/
+│   │   │       └── validation/
+│   │   ├── directives/
+│   │   │   ├── permission.directive.ts
+│   │   │   └── auto-focus.directive.ts
+│   │   ├── pipes/
+│   │   │   ├── currency.pipe.ts
+│   │   │   ├── date-format.pipe.ts
+│   │   │   └── filter.pipe.ts
+│   │   ├── services/
+│   │   │   ├── utils.service.ts
+│   │   │   └── config.service.ts
+│   │   └── shared.module.ts
+│   │
+│   ├── features/
+│   │   ├── auth/
+│   │   │   ├── components/
+│   │   │   │   ├── login/
+│   │   │   │   ├── mfa/
+│   │   │   │   ├── register/
+│   │   │   │   └── forgot-password/
+│   │   │   ├── services/
+│   │   │   │   └── auth-api.service.ts
+│   │   │   ├── auth-routing.module.ts
+│   │   │   └── auth.module.ts
+│   │   │
+│   │   ├── dashboard/
+│   │   │   ├── components/
+│   │   │   │   ├── main-dashboard/
+│   │   │   │   ├── kpi-widget/
+│   │   │   │   ├── chart-widget/
+│   │   │   │   ├── metrics-card/
+│   │   │   │   └── dashboard-builder/
+│   │   │   ├── services/
+│   │   │   │   └── dashboard.service.ts
+│   │   │   ├── dashboard-routing.module.ts
+│   │   │   └── dashboard.module.ts
+│   │   │
+│   │   ├── business-intelligence/
+│   │   │   ├── components/
+│   │   │   │   ├── bi-dashboard/
+│   │   │   │   ├── interactive-charts/
+│   │   │   │   ├── report-builder/
+│   │   │   │   ├── predictive-analytics/
+│   │   │   │   └── advanced-reports/
+│   │   │   ├── services/
+│   │   │   │   ├── bi.service.ts
+│   │   │   │   └── analytics.service.ts
+│   │   │   ├── models/
+│   │   │   │   ├── chart.model.ts
+│   │   │   │   └── report.model.ts
+│   │   │   ├── bi-routing.module.ts
+│   │   │   └── bi.module.ts
+│   │   │
+│   │   ├── purchases/
+│   │   │   ├── components/
+│   │   │   │   ├── purchase-orders/
+│   │   │   │   │   ├── purchase-order-list/
+│   │   │   │   │   ├── purchase-order-form/
+│   │   │   │   │   └── purchase-order-detail/
+│   │   │   │   ├── suppliers/
+│   │   │   │   │   ├── supplier-list/
+│   │   │   │   │   ├── supplier-form/
+│   │   │   │   │   └── supplier-evaluation/
+│   │   │   │   ├── contracts/
+│   │   │   │   │   ├── contract-list/
+│   │   │   │   │   └── contract-form/
+│   │   │   │   ├── automation/
+│   │   │   │   │   ├── auto-purchase/
+│   │   │   │   │   └── osp-calculator/
+│   │   │   │   └── tracking/
+│   │   │   │       ├── order-tracking/
+│   │   │   │       └── lead-time-monitor/
+│   │   │   ├── services/
+│   │   │   │   ├── purchase.service.ts
+│   │   │   │   ├── supplier.service.ts
+│   │   │   │   └── contract.service.ts
+│   │   │   ├── models/
+│   │   │   │   ├── purchase-order.model.ts
+│   │   │   │   ├── supplier.model.ts
+│   │   │   │   └── contract.model.ts
+│   │   │   ├── purchases-routing.module.ts
+│   │   │   └── purchases.module.ts
+│   │   │
+│   │   ├── crm/
+│   │   │   ├── components/
+│   │   │   │   ├── customers/
+│   │   │   │   │   ├── customer-list/
+│   │   │   │   │   ├── customer-form/
+│   │   │   │   │   └── customer-detail/
+│   │   │   │   ├── opportunities/
+│   │   │   │   │   ├── opportunity-list/
+│   │   │   │   │   ├── opportunity-form/
+│   │   │   │   │   └── sales-funnel/
+│   │   │   │   ├── quotes/
+│   │   │   │   │   ├── quote-list/
+│   │   │   │   │   ├── quote-generator/
+│   │   │   │   │   └── quote-tracking/
+│   │   │   │   ├── forecasting/
+│   │   │   │   │   ├── demand-forecast/
+│   │   │   │   │   └── sales-projection/
+│   │   │   │   └── segmentation/
+│   │   │   │       └── customer-segments/
+│   │   │   ├── services/
+│   │   │   │   ├── customer.service.ts
+│   │   │   │   ├── opportunity.service.ts
+│   │   │   │   ├── quote.service.ts
+│   │   │   │   └── forecast.service.ts
+│   │   │   ├── models/
+│   │   │   │   ├── customer.model.ts
+│   │   │   │   ├── opportunity.model.ts
+│   │   │   │   └── quote.model.ts
+│   │   │   ├── crm-routing.module.ts
+│   │   │   └── crm.module.ts
+│   │   │
+│   │   ├── inventory/
+│   │   │   ├── components/
+│   │   │   │   ├── stock-management/
+│   │   │   │   │   ├── stock-list/
+│   │   │   │   │   ├── stock-detail/
+│   │   │   │   │   └── stock-adjustments/
+│   │   │   │   ├── warehouse/
+│   │   │   │   │   ├── warehouse-list/
+│   │   │   │   │   ├── warehouse-form/
+│   │   │   │   │   └── location-management/
+│   │   │   │   ├── alerts/
+│   │   │   │   │   ├── stock-alerts/
+│   │   │   │   │   └── min-max-config/
+│   │   │   │   ├── traceability/
+│   │   │   │   │   ├── material-tracking/
+│   │   │   │   │   └── lot-management/
+│   │   │   │   ├── transfers/
+│   │   │   │   │   ├── transfer-list/
+│   │   │   │   │   └── transfer-form/
+│   │   │   │   ├── distribution/
+│   │   │   │   │   ├── distribution-control/
+│   │   │   │   │   └── shipping-tracking/
+│   │   │   │   └── receiving/
+│   │   │   │       ├── material-receiving/
+│   │   │   │       └── receiving-log/
+│   │   │   ├── services/
+│   │   │   │   ├── inventory.service.ts
+│   │   │   │   ├── warehouse.service.ts
+│   │   │   │   └── distribution.service.ts
+│   │   │   ├── models/
+│   │   │   │   ├── stock.model.ts
+│   │   │   │   ├── warehouse.model.ts
+│   │   │   │   └── movement.model.ts
+│   │   │   ├── inventory-routing.module.ts
+│   │   │   └── inventory.module.ts
+│   │   │
+│   │   ├── production/
+│   │   │   ├── components/
+│   │   │   │   ├── orders/
+│   │   │   │   │   ├── production-order-list/
+│   │   │   │   │   ├── production-order-form/
+│   │   │   │   │   └── production-order-detail/
+│   │   │   │   ├── planning/
+│   │   │   │   │   ├── production-planner/
+│   │   │   │   │   ├── demand-planning/
+│   │   │   │   │   └── opp-calculator/
+│   │   │   │   ├── scheduling/
+│   │   │   │   │   ├── production-schedule/
+│   │   │   │   │   └── gantt-chart/
+│   │   │   │   ├── resources/
+│   │   │   │   │   ├── resource-management/
+│   │   │   │   │   └── capacity-planning/
+│   │   │   │   ├── mrp/
+│   │   │   │   │   ├── material-requirements/
+│   │   │   │   │   └── bom-management/
+│   │   │   │   ├── tracking/
+│   │   │   │   │   ├── time-tracking/
+│   │   │   │   │   └── stage-control/
+│   │   │   │   └── simulation/
+│   │   │   │       └── scenario-simulation/
+│   │   │   ├── services/
+│   │   │   │   ├── production.service.ts
+│   │   │   │   ├── planning.service.ts
+│   │   │   │   ├── scheduling.service.ts
+│   │   │   │   └── mrp.service.ts
+│   │   │   ├── models/
+│   │   │   │   ├── production-order.model.ts
+│   │   │   │   ├── resource.model.ts
+│   │   │   │   └── bom.model.ts
+│   │   │   ├── production-routing.module.ts
+│   │   │   └── production.module.ts
+│   │   │
+│   │   ├── reports/
+│   │   │   ├── components/
+│   │   │   │   ├── report-builder/
+│   │   │   │   ├── report-viewer/
+│   │   │   │   ├── report-scheduler/
+│   │   │   │   └── export-options/
+│   │   │   ├── services/
+│   │   │   │   └── report.service.ts
+│   │   │   ├── models/
+│   │   │   │   └── report.model.ts
+│   │   │   ├── reports-routing.module.ts
+│   │   │   └── reports.module.ts
+│   │   │
+│   │   ├── administration/
+│   │   │   ├── components/
+│   │   │   │   ├── user-management/
+│   │   │   │   │   ├── user-list/
+│   │   │   │   │   ├── user-form/
+│   │   │   │   │   └── role-assignment/
+│   │   │   │   ├── system-config/
+│   │   │   │   │   ├── general-settings/
+│   │   │   │   │   └── module-config/
+│   │   │   │   ├── audit/
+│   │   │   │   │   ├── audit-log/
+│   │   │   │   │   └── audit-reports/
+│   │   │   │   └── billing/
+│   │   │   │       ├── payment-config/
+│   │   │   │       └── billing-history/
+│   │   │   ├── services/
+│   │   │   │   ├── user-management.service.ts
+│   │   │   │   ├── system-config.service.ts
+│   │   │   │   └── billing.service.ts
+│   │   │   ├── models/
+│   │   │   │   ├── system-config.model.ts
+│   │   │   │   └── billing.model.ts
+│   │   │   ├── administration-routing.module.ts
+│   │   │   └── administration.module.ts
+│   │   │
+│   │   └── notifications/
+│   │       ├── components/
+│   │       │   ├── notification-center/
+│   │       │   ├── notification-item/
+│   │       │   └── notification-settings/
+│   │       ├── services/
+│   │       │   └── notification.service.ts
+│   │       ├── models/
+│   │       │   └── notification.model.ts
+│   │       └── notifications.module.ts
+│   │
+│   ├── app-routing.module.ts
+│   ├── app.component.ts
+│   ├── app.component.html
+│   ├── app.component.scss
+│   └── app.module.ts
+│
+├── assets/
+│   ├── images/
+│   ├── icons/
+│   ├── styles/
+│   │   ├── variables.scss
+│   │   ├── mixins.scss
+│   │   └── themes/
+│   └── i18n/
+│       ├── en.json
+│       └── es.json
+│
+├── environments/
+│   ├── environment.ts
+│   ├── environment.prod.ts
+│   └── environment.staging.ts
+│
+├── styles.scss
+├── main.ts
+├── polyfills.ts
+└── index.html

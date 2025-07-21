@@ -1,0 +1,85 @@
+<p-toolbar styleClass="mb-6">
+    <ng-template #start>
+        <p-button label="Nuevo" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+        <!-- <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelectedProducts()" [disabled]="!selectedProducts || !selectedProducts.length" /> -->
+    </ng-template>
+
+    <ng-template #end>
+        <!-- <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" /> -->
+    </ng-template>
+</p-toolbar>
+<p-panel header="Proveedores">
+    <div class="card" *ngIf="suppliers() && suppliers().length > 0">
+        <p-table
+            [value]="suppliers()"
+            [paginator]="true"
+            [rows]="10"
+            responsiveLayout="scroll"
+            [resizableColumns]="true"
+            [scrollable]="true"
+            scrollHeight="500px"
+            [showCurrentPageReport]="true"
+            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords}"
+        >
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Empresa</th>
+                    <th>Contacto</th>
+                    <th>Tipo Doc.</th>
+                    <th>Número</th>
+                    <th>DV</th>
+                    <th>Teléfono</th>
+                    <th>Email</th>
+                    <!-- <th>Dirección</th>
+                <th>Departamento</th>
+                <th>Ciudad</th>
+                <th>Plazo</th>
+                <th>Límite</th>
+                <th>Vendedor</th> -->
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-supplier>
+                <tr>
+                    <td>{{ supplier.companyName }}</td>
+                    <td>{{ supplier.contactName }}</td>
+                    <td>{{ supplier.documentType }}</td>
+                    <td>{{ supplier.documentNumber }}</td>
+                    <td>{{ supplier.dv || '-' }}</td>
+                    <td>{{ supplier.phone }}</td>
+                    <td>{{ supplier.email }}</td>
+                    <!-- <td>{{ supplier.address }}</td>
+                <td>{{ departmentsMap.get(supplier.departmentId) || '—' }}</td>
+                <td>{{ citiesMap.get(supplier.cityId) || '—' }}</td>
+                <td>{{ supplier.paymentTerm }} días</td>
+                <td>{{ supplier.creditLimit | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</td>
+                <td>{{ supplier.salesRep }}</td> -->
+                    <td class="text-center">
+                        <button pButton icon="pi pi-eye" class="p-button-sm p-button-rounded p-button-text p-button-info" (click)="viewSupplier(supplier)" title="Ver proveedor"></button>
+                        <button pButton icon="pi pi-pencil" class="p-button-sm p-button-rounded p-button-text" (click)="editSupplier(supplier)"></button>
+                        <button pButton icon="pi pi-trash" class="p-button-sm p-button-rounded p-button-danger p-button-text" (click)="deleteSupplier(supplier)"></button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    <p-confirmdialog />
+    <p-dialog header="Detalle del proveedor" [(visible)]="displayViewDialog" [modal]="true" [style]="{ width: '800px' }">
+        <div *ngIf="selectedSupplier" class="grid grid-cols-2 gap-2 text-sm">
+            <div><b>Empresa:</b> {{ selectedSupplier.companyName }}</div>
+            <div><b>Contacto:</b> {{ selectedSupplier.contactName }}</div>
+            <div><b>Tipo Documento:</b> {{ selectedSupplier.documentType }}</div>
+            <div><b>Número:</b> {{ selectedSupplier.documentNumber }}</div>
+            <div *ngIf="selectedSupplier.dv"><b>DV:</b> {{ selectedSupplier.dv }}</div>
+            <div><b>Email:</b> {{ selectedSupplier.email }}</div>
+            <div><b>Teléfono:</b> {{ selectedSupplier.phone }}</div>
+            <div><b>Dirección:</b> {{ selectedSupplier.address }}</div>
+            <div><b>Departamento:</b> {{ departmentsMap.get(selectedSupplier.departmentId) }}</div>
+            <div><b>Ciudad:</b> {{ citiesMap.get(selectedSupplier.cityId) }}</div>
+            <div><b>Plazo pago:</b> {{ selectedSupplier.paymentTerm }} días</div>
+            <div><b>Crédito: </b> {{ selectedSupplier.creditLimit | currency: 'COP' }}</div>
+            <div><b>Vendedor:</b> {{ selectedSupplier.salesRep }}</div>
+        </div>
+    </p-dialog>
+</p-panel>

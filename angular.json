@@ -38,6 +38,12 @@
           },
           "configurations": {
             "production": {
+                "fileReplacements": [
+                  {
+                    "replace": "src/environments/environment.ts",
+                    "with": "src/environments/environment.prod.ts"
+                  }
+                ],
               "budgets": [
                 {
                   "type": "initial",
@@ -51,6 +57,15 @@
                 }
               ],
               "outputHashing": "all"
+            },
+            "qa": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.qa.ts"
+                }
+              ]
+            
             },
             "development": {
               "optimization": false,
@@ -66,6 +81,9 @@
             "production": {
               "buildTarget": "quanta-frontend:build:production"
             },
+             "qa": {
+               "browserTarget": "quanta-frontend:build:qa"
+             },
             "development": {
               "buildTarget": "quanta-frontend:build:development"
             }
