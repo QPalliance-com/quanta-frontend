@@ -11,11 +11,8 @@ RUN npm install -g @angular/cli@19
 
 # Copiar package.json y package-lock.json
 COPY package*.json ./
+RUN npm ci        # Usamos sólo npm ci, más limpio
 
-# Instala dependencias usando npm ci para garantizar consistencia
-RUN npm ci
-
-# Copia el resto del código fuente
 COPY . .
 
 # Compila Angular en modo producción
