@@ -1,4 +1,4 @@
-# Etapa 1: Build Angular
+# Etapa 1: Compilar Angular
 FROM node:20 AS builder
 
 ARG ENV=production
@@ -6,11 +6,17 @@ ENV NODE_ENV=$ENV
 
 WORKDIR /app
 
-COPY package*.json ./
-COPY . .
+RUN npm install -g @angular/cli@19
 
-RUN npm ci
-RUN npm run build -- --configuration=$ENV
+COPY package*.json ./
+RUN npm install
+
+COPY ../ . 
+
+RUN ng version
+
+RUN npm run build --configuration=$ENV
+# o: RUN npx ng build --configuration=$ENV
 
 # Etapa 2: Servir con Nginx
 FROM nginx:alpine
