@@ -51,7 +51,7 @@ jobs:
 
     - name: Build and push Docker image
       run: |
-        IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/quanta-frontend:${{ steps.env.outputs.image_tag }}
+        IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/frontend-qp:${{ steps.env.outputs.image_tag }}
         docker build -t $IMAGE_URI -f docker/Dockerfile .
         docker push $IMAGE_URI
 
