@@ -57,7 +57,7 @@ jobs:
 
     - name: Generate updated task definition
       run: |
-        IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/quanta-frontend:${{ steps.env.outputs.image_tag }}
+        IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/frontend-qp:${{ steps.env.outputs.image_tag }}
         sed "s|REPLACEME|$IMAGE_URI|g" docker/ecs-task-def.json > new-task-def.json
 
     - name: Deploy to ECS
