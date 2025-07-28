@@ -6,19 +6,17 @@ ENV NODE_ENV=$ENV
 
 WORKDIR /app
 
-# Instala Angular CLI versión 19 globalmente
 RUN npm install -g @angular/cli@19
 
 COPY package*.json ./
-RUN npm install
+RUN npm ci        # Usamos sólo npm ci, más limpio
+
 COPY . .
 
-# Opcional: Verifica la versión instalada
 RUN ng version
 
-RUN npm ci
-
 RUN npm run build -- --configuration=$ENV
+# o: RUN npx ng build --configuration=$ENV
 
 # Etapa 2: Servir con Nginx
 FROM nginx:alpine
