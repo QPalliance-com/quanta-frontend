@@ -1,0 +1,21 @@
+{
+    "family": "quanta-frontend-task",
+    "networkMode": "awsvpc",
+    "cpu": "256",
+    "memory": "512",
+    "requiresCompatibilities": ["FARGATE"],
+    "executionRoleArn": "arn:aws:iam::<TU_ID>:role/ecsTaskExecutionRole",
+    "containerDefinitions": [
+        {
+            "name": "quanta-frontend",
+            "image": "REPLACEME",
+            "portMappings": [
+                {
+                    "containerPort": 80,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true
+        }
+    ]
+}
