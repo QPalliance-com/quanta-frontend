@@ -1,7 +1,7 @@
 # Etapa 1: Compilar Angular
 FROM node:20 AS builder
 
-ARG ENV=production
+ARG ENV=development
 ENV NODE_ENV=$ENV
 
 WORKDIR /app
