@@ -16,7 +16,7 @@ COPY . .
 # Opcional: Verifica la versión instalada
 RUN ng version
 
-RUN npm run build -- --configuration $ENV
+RUN npm run build -- --configuration=$ENV
 
 # Etapa 2: Servir con Nginx
 FROM nginx:alpine
