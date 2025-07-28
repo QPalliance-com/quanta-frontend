@@ -16,6 +16,8 @@ COPY . .
 # Opcional: Verifica la versión instalada
 RUN ng version
 
+RUN npm ci
+
 RUN npm run build -- --configuration=$ENV
 
 # Etapa 2: Servir con Nginx
