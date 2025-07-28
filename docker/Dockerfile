@@ -11,7 +11,7 @@ RUN npm install -g @angular/cli@19
 COPY package*.json ./
 RUN npm ci        # Usamos sólo npm ci, más limpio
 
-COPY . .
+COPY ../ .
 
 RUN ng version
 
