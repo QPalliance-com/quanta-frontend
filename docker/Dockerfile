@@ -15,7 +15,7 @@ COPY . .
 
 RUN ng version
 
-RUN npm run build -- --configuration=$ENV
+RUN npm run build --configuration=$ENV
 # o: RUN npx ng build --configuration=$ENV
 
 # Etapa 2: Servir con Nginx
