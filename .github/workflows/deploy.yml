@@ -18,14 +18,16 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+        aws-region: us-east-2  # <-- Cambio aquí
 
     - name: Login to Amazon ECR
-      id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
 
     - name: Build and push Docker image
+      env:
+        IMAGE_URI: 839088212270.dkr.ecr.us-east-2.amazonaws.com/quantafrontend
       run: |
-        IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/quanta-frontend:latest
-        docker build -t $IMAGE_URI .
-        docker push $IMAGE_URI
+        docker build -t $IMAGE_URI:latest -t $IMAGE_URI:${{ github.sha }} .
+        docker push $IMAGE_URI:latest
+        docker push $IMAGE_URI:${{ github.sha }}
+
