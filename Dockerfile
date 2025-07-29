@@ -15,7 +15,7 @@ FROM nginx:alpine
 COPY --from=builder /app/dist/* /usr/share/nginx/html/
 
 # Elimina la configuración por defecto de Nginx y usa la nuestra (opcional)
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
