@@ -1,0 +1,38 @@
+<p-toast></p-toast>
+<div class="card flex flex-col gap-6 w-full">
+    <h2 class="text-2xl font-semibold mb-6">Rol</h2>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+        <!-- Nombre del Rol -->
+        <div>
+            <label class="block mb-1 font-semibold text-gray-700">Nombre del rol</label>
+            <input type="text" formControlName="name" pInputText class="w-full" placeholder="Ingrese el nombre del rol" />
+            <small *ngIf="form.get('name')?.invalid && form.get('name')?.touched" class="text-red-500"> El nombre es requerido </small>
+        </div>
+
+        <!-- Descripción -->
+        <div>
+            <label class="block mb-1 font-semibold text-gray-700">Descripción</label>
+            <textarea formControlName="description" rows="3" pInputTextarea class="w-full" placeholder="Ingrese la descripción"></textarea>
+            <small *ngIf="form.get('description')?.invalid && form.get('description')?.touched" class="text-red-500"> La descripción es requerida </small>
+        </div>
+
+        <!-- Permisos -->
+        <div>
+            <label class="block mb-1 font-semibold text-gray-700">Permisos</label>
+            <p-multiselect [options]="availablePermissions" optionLabel="name" optionValue="id" display="chip" formControlName="permissions" class="w-full" placeholder="Seleccione permisos"> </p-multiselect>
+            <small *ngIf="form.get('permissions')?.invalid && form.get('permissions')?.touched" class="text-red-500"> Al menos un permiso es requerido </small>
+        </div>
+
+        <!-- Módulos -->
+        <div>
+            <label class="block mb-1 font-semibold text-gray-700">Módulos</label>
+            <p-multiselect [options]="availableModules" optionLabel="name" optionValue="id" display="chip" formControlName="modules" class="w-full" placeholder="Seleccione módulos"> </p-multiselect>
+            <small *ngIf="form.get('modules')?.invalid && form.get('modules')?.touched" class="text-red-500"> Al menos un módulo es requerido </small>
+        </div>
+        <!-- Submit -->
+        <div class="flex justify-end gap-4 pt-6 border-t mt-6">
+            <button pButton type="button" class="p-button-secondary" (click)="cancel()">Cancelar</button>
+            <button pButton type="submit" label="Guardar" [disabled]="form.invalid"></button>
+        </div>
+    </form>
+</div>

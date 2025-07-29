@@ -1,5 +1,5 @@
 import { PurchaseOrderStatus } from '../../../core/enums/purchase-order-status.enum';
-import { PurchaseOrderProduct } from './purchase-order-product.model';
+import { PurchaseOrderItem } from './purchase-order-item.model';
 
 export interface PurchaseOrder {
     id: number | null;
@@ -12,13 +12,7 @@ export interface PurchaseOrder {
     participation: number | null;
     registryNumber: string | null;
     status: PurchaseOrderStatus | null;
-    products: PurchaseOrderProduct[];
+    items: PurchaseOrderItem[];
     createdAt: Date | string | null;
     updatedAt?: Date | string | null;
-}
-export interface PurchaseOrderItem {
-    productId: number;
-    description: string;
-    quantity: number;
-    unitPrice: number;
 }

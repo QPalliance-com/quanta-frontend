@@ -38,7 +38,7 @@ export class PurchaseOrderService {
     getPurchaseOrdersData(): Observable<ApiResponse<PurchaseOrder[]>> {
         return this.http.get<ApiResponse<PurchaseOrder[]>>(this.baseUrl);
     }
-    getPurchaseOrderById(id: number): Observable<ApiResponse<PurchaseOrder>> {
+    getPurchaseOrderById(id: number | string): Observable<ApiResponse<PurchaseOrder>> {
         return this.http.get<ApiResponse<PurchaseOrder>>(`${this.baseUrl}/${id}`);
     }
     createPurchaseOrder(order: PurchaseOrder): Observable<ApiResponse<PurchaseOrder>> {

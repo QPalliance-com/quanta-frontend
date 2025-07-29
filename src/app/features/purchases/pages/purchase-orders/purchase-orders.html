@@ -1,0 +1,99 @@
+<div class="card" *ngIf="orders() && orders().length > 0">
+    <p-toolbar styleClass="mb-12">
+        <ng-template #start>
+            <p-button label="Nueva orden de compra" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+            <!-- <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelectedProducts()" [disabled]="!selectedProducts || !selectedProducts.length" /> -->
+        </ng-template>
+
+        <ng-template #end>
+            <p-button label="Exportar CSV" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
+        </ng-template>
+    </p-toolbar>
+    <p-table
+        #ordersTable
+        [value]="orders()"
+        [paginator]="true"
+        [globalFilterFields]="filterFields"
+        [rows]="10"
+        [columns]="cols"
+        responsiveLayout="scroll"
+        [resizableColumns]="true"
+        [scrollable]="true"
+        scrollHeight="500px"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords}"
+    >
+        <ng-template #caption>
+            <div class="flex items-center justify-between">
+                <div class="font-semibold text-xl mb-4">Ordenes de compra</div>
+                <p-iconfield>
+                    <p-inputicon styleClass="pi pi-search" />
+                    <input pInputText type="text" (input)="onGlobalFilter(ordersTable, $event)" placeholder="Buscar..." />
+                </p-iconfield>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th *ngFor="let col of cols" [pSortableColumn]="col.field">{{ col.header }} <p-sortIcon [field]="col.field" /></th>
+                <th class="text-center">Acciones</th>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-order>
+            <tr>
+                <td class="px-4 py-2">{{ order.id }}</td>
+                <td class="px-4 py-2">{{ order.companyName }}</td>
+                <td class="px-4 py-2">{{ this.findSupplierName(order.supplierId) }}</td>
+                <td class="px-4 py-2">{{ order.receptionDate | date: 'yyyy-MM-dd' }}</td>
+                <td class="px-4 py-2">{{ order.dueDate | date: 'yyyy-MM-dd' }}</td>
+                <td class="px-4 py-2">{{ order.deliveryDays }}</td>
+                <td class="px-4 py-2">{{ order.ceco.label }}</td>
+                <td class="px-4 py-2">{{ order.participation }}%</td>
+                <td class="px-4 py-2">
+                    <span
+                        class="px-2 py-1 rounded text-white"
+                        [ngClass]="{
+                            'bg-blue-500': order.status === 'Solicitada',
+                            'bg-yellow-500': order.status?.includes('Enviada'),
+                            'bg-red-500': order.status === 'Rechazada',
+                            'bg-green-500': order.status === 'Aceptada'
+                        }"
+                    >
+                        {{ order.status }}
+                    </span>
+                </td>
+
+                <td class="text-center">
+                    <button pButton icon="pi pi-eye" class="p-button-sm p-button-rounded p-button-text p-button-info" (click)="viewPurchaseOrder(order)" title="Ver solicitud de compra"></button>
+                    <button pButton icon="pi pi-pencil" class="p-button-sm p-button-rounded p-button-text" (click)="editPurchaseOrder(order)"></button>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<p-confirmdialog />
+<p-dialog header="Detalle de la orden" [(visible)]="displayViewDialog" [modal]="true" [style]="{ width: '800px' }">
+    <div *ngIf="selectedPurchaseOrder" class="grid grid-cols-2 gap-2 text-sm">
+        <div><strong>Empresa:</strong> {{ selectedPurchaseOrder.companyName }}</div>
+        <div><strong>Proveedor:</strong> {{ selectedPurchaseOrder.supplierId }}</div>
+        <div><strong>Recepción:</strong> {{ selectedPurchaseOrder.receptionDate | date }}</div>
+        <div><strong>Vencimiento:</strong> {{ selectedPurchaseOrder.dueDate | date }}</div>
+        <div><strong>Días entrega:</strong> {{ selectedPurchaseOrder.deliveryDays }}</div>
+        <div><strong>CECO:</strong> {{ selectedPurchaseOrder.ceco.label }} ({{ selectedPurchaseOrder.ceco.value }})</div>
+        <div><strong>Participación:</strong> {{ selectedPurchaseOrder.participation }}%</div>
+        <div>
+            <strong>Estado:</strong>
+            <span
+                class="px-2 py-1 rounded text-white"
+                [ngClass]="{
+                    'bg-blue-500': selectedPurchaseOrder.status === 'Solicitada',
+                    'bg-green-500': selectedPurchaseOrder.status === 'Aceptada',
+                    'bg-yellow-500': selectedPurchaseOrder.status?.includes('Enviada'),
+                    'bg-red-500': selectedPurchaseOrder.status === 'Rechazada'
+                }"
+            >
+                {{ selectedPurchaseOrder.status }}
+            </span>
+        </div>
+    </div>
+</p-dialog>

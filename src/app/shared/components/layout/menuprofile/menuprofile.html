@@ -1,0 +1,35 @@
+<button (click)="toggleMenu()" pTooltip="Profile" [tooltipDisabled]="isTooltipDisabled()">
+    <img src="/assets/images/avatar.png" alt="avatar" style="width: 32px; height: 32px" />
+    <span class="text-start">
+        <strong>Amy Elsner</strong>
+        <small>Webmaster</small>
+    </span>
+    <i class="layout-menu-profile-toggler pi pi-fw" [ngClass]="{ 'pi-angle-down': menuProfilePosition() === 'start' || isHorizontal(), 'pi-angle-up': menuProfilePosition() === 'end' && !isHorizontal() }"></i>
+</button>
+
+<ul *ngIf="menuProfileActive()" [@menu]="isHorizontal() ? 'overlay' : 'inline'">
+    <!-- <li pTooltip="Settings" [tooltipDisabled]="isTooltipDisabled()" [routerLink]="['/profile/create']">
+        <button [routerLink]="['/documentation']">
+            <i class="pi pi-cog pi-fw"></i>
+            <span>Settings</span>
+        </button>
+    </li> -->
+    <li pTooltip="Profile" [tooltipDisabled]="isTooltipDisabled()">
+        <button [routerLink]="['/documentation']">
+            <i class="pi pi-file-o pi-fw"></i>
+            <span>Perfil</span>
+        </button>
+    </li>
+    <!-- <li pTooltip="Support" [tooltipDisabled]="isTooltipDisabled()">
+        <button [routerLink]="['/documentation']">
+            <i class="pi pi-compass pi-fw"></i>
+            <span>Support</span>
+        </button>
+    </li> -->
+    <li pTooltip="Logout" [tooltipDisabled]="isTooltipDisabled()" [routerLink]="['/auth/login2']">
+        <button class="p-link">
+            <i class="pi pi-power-off pi-fw"></i>
+            <span>Cerrar sesión</span>
+        </button>
+    </li>
+</ul>

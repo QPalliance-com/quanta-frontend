@@ -1,25 +1,42 @@
-import { Injectable, effect, signal, computed } from '@angular/core';
+import { computed, effect, Injectable, signal, Signal, WritableSignal } from '@angular/core';
 import { Subject } from 'rxjs';
+import { MenuItem } from 'primeng/api';
+
+export type MenuMode = 'static' | 'overlay' | 'slim-plus' | 'slim' | 'horizontal' | 'reveal' | 'drawer';
 
 export interface layoutConfig {
-    preset?: string;
-    primary?: string;
-    surface?: string | undefined | null;
-    darkTheme?: boolean;
-    menuMode?: string;
+    primary: string;
+    surface: string | undefined | null;
+    darkTheme: boolean;
+    menuMode: MenuMode;
+    menuTheme: string;
+    topbarTheme: string;
+    menuProfilePosition: string;
 }
 
-interface LayoutState {
-    staticMenuDesktopInactive?: boolean;
-    overlayMenuActive?: boolean;
-    configSidebarVisible?: boolean;
-    staticMenuMobileActive?: boolean;
-    menuHoverActive?: boolean;
+export interface LayoutState {
+    staticMenuDesktopInactive: boolean;
+    overlayMenuActive: boolean;
+    configSidebarVisible: boolean;
+    staticMenuMobileActive: boolean;
+    menuHoverActive: boolean;
+    rightMenuActive: boolean;
+    topbarMenuActive: boolean;
+    sidebarActive: boolean;
+    activeMenuItem: any;
+    overlaySubmenuActive: boolean;
+    anchored: boolean;
+    menuProfileActive: boolean;
 }
 
-interface MenuChangeEvent {
+export interface MenuChangeEvent {
     key: string;
     routeEvent?: boolean;
+}
+
+export interface TabCloseEvent {
+    tab: MenuItem;
+    index: number;
 }
 
 @Injectable({
@@ -27,19 +44,28 @@ interface MenuChangeEvent {
 })
 export class LayoutService {
     _config: layoutConfig = {
-        preset: 'Aura',
-        primary: 'emerald',
+        primary: 'indigo',
         surface: null,
         darkTheme: false,
-        menuMode: 'static'
+        menuMode: 'static',
+        menuTheme: 'light',
+        topbarTheme: 'white',
+        menuProfilePosition: 'start'
     };
 
     _state: LayoutState = {
         staticMenuDesktopInactive: false,
         overlayMenuActive: false,
-        configSidebarVisible: true,
+        configSidebarVisible: false,
         staticMenuMobileActive: false,
-        menuHoverActive: false
+        menuHoverActive: false,
+        rightMenuActive: false,
+        topbarMenuActive: false,
+        sidebarActive: false,
+        anchored: false,
+        activeMenuItem: null,
+        overlaySubmenuActive: false,
+        menuProfileActive: false
     };
 
     layoutConfig = signal<layoutConfig>(this._config);
@@ -62,19 +88,24 @@ export class LayoutService {
 
     overlayOpen$ = this.overlayOpen.asObservable();
 
-    theme = computed(() => (this.layoutConfig()?.darkTheme ? 'light' : 'dark'));
+    isSidebarActive: Signal<boolean> = computed(() => this.layoutState().overlayMenuActive || this.layoutState().staticMenuMobileActive);
 
-    isSidebarActive = computed(() => this.layoutState().overlayMenuActive || this.layoutState().staticMenuMobileActive);
+    isDarkTheme: Signal<boolean> = computed(() => this.layoutConfig().darkTheme);
 
-    isDarkTheme = computed(() => this.layoutConfig().darkTheme);
+    isOverlay: Signal<boolean> = computed(() => this.layoutConfig().menuMode === 'overlay');
 
-    getPrimary = computed(() => this.layoutConfig().primary);
+    isSlim: Signal<boolean> = computed(() => this.layoutConfig().menuMode === 'slim');
 
-    getSurface = computed(() => this.layoutConfig().surface);
+    isSlimPlus: Signal<boolean> = computed(() => this.layoutConfig().menuMode === 'slim-plus');
 
-    isOverlay = computed(() => this.layoutConfig().menuMode === 'overlay');
+    isHorizontal: Signal<boolean> = computed(() => this.layoutConfig().menuMode === 'horizontal');
 
-    transitionComplete = signal<boolean>(false);
+    transitionComplete: WritableSignal<boolean> = signal<boolean>(false);
+
+    isSidebarStateChanged = computed(() => {
+        const layoutConfig = this.layoutConfig();
+        return layoutConfig.menuMode === 'horizontal' || layoutConfig.menuMode === 'slim' || layoutConfig.menuMode === 'slim-plus';
+    });
 
     private initialized = false;
 
@@ -95,6 +126,10 @@ export class LayoutService {
             }
 
             this.handleDarkModeTransition(config);
+        });
+
+        effect(() => {
+            this.isSidebarStateChanged() && this.reset();
         });
     }
 
@@ -155,6 +190,14 @@ export class LayoutService {
         }
     }
 
+    onMenuProfileToggle() {
+        this.layoutState.update((prev) => ({ ...prev, menuProfileActive: !prev.menuProfileActive }));
+    }
+
+    openRightMenu() {
+        this.layoutState.update((prev) => ({ ...prev, rightMenuActive: true }));
+    }
+
     isDesktop() {
         return window.innerWidth > 991;
     }
@@ -174,5 +217,13 @@ export class LayoutService {
 
     reset() {
         this.resetSource.next(true);
+    }
+
+    onOverlaySubmenuOpen() {
+        this.overlayOpen.next(null);
+    }
+
+    hideConfigSidebar() {
+        this.layoutState.update((prev) => ({ ...prev, configSidebarVisible: false }));
     }
 }

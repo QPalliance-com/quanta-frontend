@@ -275,9 +275,9 @@ src/
 │   │       └── notifications.module.ts
 │   │
 │   ├── app-routing.module.ts
-│   ├── app.component.ts
-│   ├── app.component.html
-│   ├── app.component.scss
+│   ├── appts
+│   ├── apphtml
+│   ├── appscss
 │   └── app.module.ts
 │
 ├── assets/
