@@ -11,7 +11,7 @@ RUN npm install -g @angular/cli@19
 
 # Copiar package.json y package-lock.json
 COPY package*.json ./
-RUN npm ci        # Usamos sólo npm ci, más limpio
+RUN npm ci --legacy-peer-deps       # Usamos sólo npm ci, más limpio
 
 COPY . . 
 
