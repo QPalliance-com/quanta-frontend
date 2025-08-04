@@ -6,39 +6,67 @@ import { Role } from '../../models/role.model';
 import { InputText } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Toast } from 'primeng/toast';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
+import { forkJoin } from 'rxjs';
+import { PermissionService } from '../../services/permission.service';
+import { ModulesService } from '../../services/modules.service';
+import { RolesService } from '../../services/roles.service';
 
 @Component({
     selector: 'app-role-form',
     imports: [ReactiveFormsModule, FormsModule, InputText, TextareaModule, MultiSelectModule, Toast, CommonModule, ButtonModule],
     templateUrl: './role-form.html',
-    styleUrl: './role-form.scss'
+    styleUrl: './role-form.scss',
+    providers: [PermissionService, ModulesService]
 })
 export class RoleFormComponent implements OnInit {
-    @Input() role: Role | null = null;
-    @Input() availablePermissions: Permission[] = [];
-    @Input() availableModules: Module[] = [];
-    @Output() submitForm = new EventEmitter<Role>();
-
+    role: Role | null = null;
+    availablePermissions: Permission[] = [];
+    availableModules: Module[] = [];
+    submitForm = new EventEmitter<Role>();
+    isEditMode = false;
+    roleId!: number;
     form!: FormGroup;
 
     constructor(
         private fb: FormBuilder,
-        private router: Router
+        private router: Router,
+        private route: ActivatedRoute,
+        private permissionService: PermissionService,
+        private modulesService: ModulesService,
+        private roleService: RolesService
     ) {}
 
     ngOnInit(): void {
-        this.form = this.fb.group({
-            name: [this.role?.name || '', Validators.required],
-            description: [this.role?.description || '', Validators.required],
-            permissions: [this.role?.permissions?.map((p) => p.id) || [], Validators.required],
-            modules: [this.role?.modules?.map((m) => m.id) || [], Validators.required]
+        forkJoin([this.permissionService.getPermissions(), this.modulesService.getModules()]).subscribe(([permissions, modules]) => {
+            this.availablePermissions = permissions.data;
+            this.availableModules = modules.data;
         });
+        this.buildForm();
+        const id = this.route.snapshot.paramMap.get('id');
+        if (id) {
+            this.isEditMode = true;
+            this.roleId = +id;
+            this.loadRole(this.roleId);
+        }
     }
 
+    buildForm(): void {
+        this.form = this.fb.group({
+            name: ['', Validators.required],
+            description: ['', Validators.required],
+            permissions: [[], Validators.required],
+            modules: [[], Validators.required]
+        });
+    }
+    loadRole(id: number): void {
+        this.roleService.getRoleById(id).subscribe((role) => {
+            this.form.patchValue(role.data);
+        });
+    }
     onSubmit(): void {
         if (this.form.valid) {
             const result: Role = {
@@ -52,6 +80,6 @@ export class RoleFormComponent implements OnInit {
         }
     }
     cancel(): void {
-        this.router.navigate(['/settings/products']);
+        this.router.navigate(['/settings/roles']);
     }
 }

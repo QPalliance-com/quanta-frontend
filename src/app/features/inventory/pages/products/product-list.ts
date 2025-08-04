@@ -14,7 +14,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputTextModule } from 'primeng/inputtext';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { Product } from '../../models/product.model';
+import { Product } from '../../../inventory/models/product.model';
 import { Router } from '@angular/router';
 import { ProductService } from '../../services/product.service';
 import { Column, ExportColumn } from '../../../../core/models/table-options.model';
@@ -69,10 +69,10 @@ export class ProductListComponent implements OnInit {
         });
     }
     openNew() {
-        this.router.navigate(['/settings/products-form/new']);
+        this.router.navigate(['/inventory/products-form/new']);
     }
     editProduct(product: Product) {
-        this.router.navigate(['/settings/products-form/edit', product.id]);
+        this.router.navigate(['/inventory/products-form/edit', product.id]);
     }
     viewProduct(product: Product) {
         this.product = product;

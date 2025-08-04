@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../services/product.service';
-import { Product } from '../../models/product.model';
+import { Product, ProductVariant } from '../../../inventory/models/product.model';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
@@ -13,11 +13,34 @@ import { SelectModule } from 'primeng/select';
 import { ToastModule } from 'primeng/toast';
 import { CheckboxModule } from 'primeng/checkbox';
 import { TextareaModule } from 'primeng/textarea';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { FieldsetModule } from 'primeng/fieldset';
+import { forkJoin } from 'rxjs';
+import { ProductVariantFormComponent } from '../product-variant-form/product-variant-form';
+import { TableModule } from 'primeng/table';
 
 @Component({
     selector: 'app-product-form',
     standalone: true,
-    imports: [InputTextModule, InputNumberModule, CheckboxModule, TextareaModule, ToastModule, SelectModule, ButtonModule, DividerModule, CommonModule, ReactiveFormsModule, PanelModule], // ← agrega aquí PrimeNG y módulos compartidos si es necesario
+    imports: [
+        InputTextModule,
+        InputNumberModule,
+        FieldsetModule,
+        FormsModule,
+        ReactiveFormsModule,
+        AutoCompleteModule,
+        CheckboxModule,
+        TextareaModule,
+        ToastModule,
+        SelectModule,
+        ButtonModule,
+        DividerModule,
+        CommonModule,
+        ReactiveFormsModule,
+        PanelModule,
+        ProductVariantFormComponent,
+        TableModule
+    ],
     templateUrl: './product-form.html',
     styleUrls: ['./product-form.scss'],
     providers: [ProductService]
@@ -26,7 +49,11 @@ export class ProductFormComponent implements OnInit {
     form!: FormGroup;
     isEditMode = false;
     productId!: number;
-
+    productList: Product[] = [];
+    filteredProducts: Product[] = [];
+    newAttribute: string = '';
+    attributes: string[] = [];
+    parentProductName: string = '';
     productTypes = [
         { label: 'Input', value: 'input' },
         { label: 'Final Product', value: 'final_product' }
@@ -40,6 +67,11 @@ export class ProductFormComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
+        forkJoin({
+            products: this.productService.getAllProductsCatalogItem()
+        }).subscribe(({ products }) => {
+            this.productList = products.data.filter((p) => !p.isVariant);
+        });
         this.buildForm();
 
         const id = this.route.snapshot.paramMap.get('id');
@@ -59,7 +91,8 @@ export class ProductFormComponent implements OnInit {
             estimatedUnitPrice: [0],
             defaultLocation: [''],
             description: [''],
-            isActive: [true]
+            isActive: [true],
+            variants: this.fb.array([])
         });
     }
 
@@ -67,6 +100,9 @@ export class ProductFormComponent implements OnInit {
         this.productService.getProductById(id).subscribe((product) => {
             this.form.patchValue(product.data);
         });
+    }
+    get variationsFormArray(): FormArray {
+        return this.form.get('variants') as FormArray;
     }
 
     onSubmit(): void {
@@ -76,15 +112,19 @@ export class ProductFormComponent implements OnInit {
 
         if (this.isEditMode) {
             this.productService.updateProduct(this.productId, data).subscribe(() => {
-                this.router.navigate(['/settings/products']);
+                this.router.navigate(['/inventory/products']);
             });
         } else {
             this.productService.createProduct(data).subscribe(() => {
-                this.router.navigate(['/settings/products']);
+                this.router.navigate(['/inventory/products']);
             });
         }
     }
+    addVariant(variant: any) {
+        this.variationsFormArray.push(this.fb.group(variant));
+    }
+
     cancel(): void {
-        this.router.navigate(['/settings/products']);
+        this.router.navigate(['/inventory/products']);
     }
 }

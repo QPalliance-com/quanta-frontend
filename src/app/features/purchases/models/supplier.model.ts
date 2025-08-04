@@ -12,8 +12,6 @@ export interface Supplier {
     phone: string;
     creditLimit?: number;
     paymentTerm: string;
-    salesRep: string;
-
     departmentId: number;
     cityId: number;
 }

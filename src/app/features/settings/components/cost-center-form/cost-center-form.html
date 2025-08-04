@@ -1,0 +1,37 @@
+<p-toast></p-toast>
+<div class="card flex flex-col gap-6 w-full">
+    <h2 class="text-2xl font-semibold mb-6">Centro de costos</h2>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+        <!-- Código -->
+        <div>
+            <label for="code" class="block text-sm font-semibold text-gray-700 mb-1">Codigo</label>
+            <input id="code" type="text" pInputText formControlName="code" class="w-full" placeholder="e.g. CC-001" />
+            <small *ngIf="form.get('code')?.invalid && form.get('code')?.touched" class="text-red-500">Codigo es requerido.</small>
+        </div>
+
+        <!-- Nombre -->
+        <div>
+            <label for="name" class="block text-sm font-semibold text-gray-700 mb-1">Nombre</label>
+            <input id="name" type="text" pInputText formControlName="name" class="w-full" placeholder="e.g. Administration" />
+            <small *ngIf="form.get('name')?.invalid && form.get('name')?.touched" class="text-red-500">Nombre es requerido.</small>
+        </div>
+
+        <!-- Descripción -->
+        <div>
+            <label for="description" class="block text-sm font-semibold text-gray-700 mb-1">Descripción</label>
+            <textarea id="description" pInputTextarea formControlName="description" rows="3" class="w-full" placeholder="Optional..."></textarea>
+        </div>
+
+        <!-- Activo -->
+        <div class="flex items-center gap-2">
+            <p-checkbox inputId="isActive" formControlName="isActive" binary="true"></p-checkbox>
+            <label for="isActive" class="text-sm text-gray-700">Activo</label>
+        </div>
+
+        <!-- Botón -->
+        <div class="flex justify-end gap-4 pt-6 border-t mt-6">
+            <button pButton type="button" class="p-button-secondary" (click)="cancel()">Cancelar</button>
+            <button pButton type="submit" label="Guardar" [disabled]="form.invalid"></button>
+        </div>
+    </form>
+</div>

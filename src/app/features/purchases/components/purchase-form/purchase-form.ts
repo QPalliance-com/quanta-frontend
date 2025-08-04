@@ -4,6 +4,7 @@ import { PurchaseOrder } from '../../models/purchase-order.model';
 import { PurchaseOrderStatus } from '../../../../core/enums/purchase-order-status.enum';
 /** PrimeNG modules */
 import { InputTextModule } from 'primeng/inputtext';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
@@ -16,19 +17,22 @@ import { SupplierService } from '../../services/supplier.service';
 import { DatePicker } from 'primeng/datepicker';
 import { forkJoin, Observable } from 'rxjs';
 import { MessageService } from 'primeng/api';
-import { Product } from '../../../settings/models/product.model';
+import { Product } from '../../../inventory/models/product.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PurchaseOrderService } from '../../services/purchase-order.service';
 import { PurchaseItemsTableComponent } from '../purchase-items-table/purchase-items-table';
 import { PurchaseOrderItem } from '../../models/purchase-order-item.model';
 import { CompanyService } from '../../../settings/services/company.service';
-
+import { FileUpload, UploadEvent } from 'primeng/fileupload';
+import { ProductService } from '../../../inventory/services/product.service';
+import { CostCenterService } from '../../../settings/services/cost-center.service';
+import { CostCenter } from '../../../settings/models/cost-center.model';
 @Component({
     selector: 'app-purchase-form',
     templateUrl: './purchase-form.html',
     styleUrls: ['./purchase-form.scss'],
     standalone: true,
-    imports: [InputTextModule, InputNumberModule, ToastModule, SelectModule, ButtonModule, DividerModule, CommonModule, ReactiveFormsModule, PanelModule, DatePicker, PurchaseItemsTableComponent], // ← agrega aquí PrimeNG y módulos compartidos si es necesario
+    imports: [InputTextModule, InputNumberModule, FileUpload, ToastModule, MultiSelectModule, SelectModule, ButtonModule, DividerModule, CommonModule, ReactiveFormsModule, PanelModule, DatePicker, PurchaseItemsTableComponent], // ← agrega aquí PrimeNG y módulos compartidos si es necesario
     providers: [SupplierService, MessageService]
 })
 export class PurchaseFormComponent implements OnInit {
@@ -36,15 +40,12 @@ export class PurchaseFormComponent implements OnInit {
     @Output() submitted = new EventEmitter<PurchaseOrder>();
     @Output() cancelled = new EventEmitter<void>();
     suppliers: Supplier[] = [];
+    costCenters: CostCenter[] = [];
     filteredProducts: Product[] = [];
     form!: FormGroup;
     editMode: boolean = false;
     orderId: number | null = null;
-    // Opciones para dropdowns (mock o traído desde servicio)
-    cecoOptions = [
-        { label: 'Producción', value: 'PROD' },
-        { label: 'Mantenimiento', value: 'MANT' }
-    ];
+    selectedFile?: File; // Variable para almacenar el archivo seleccionado
 
     statusOptions = Object.values(PurchaseOrderStatus);
 
@@ -55,13 +56,17 @@ export class PurchaseFormComponent implements OnInit {
         private companyService: CompanyService,
         private msg: MessageService,
         private route: ActivatedRoute,
-        private router: Router
+        private router: Router,
+        private messageService: MessageService,
+        private productsService: ProductService,
+        private costCenterService: CostCenterService
     ) {}
 
     ngOnInit(): void {
-        forkJoin([this.supplierService.getSuppliersData()]).subscribe({
-            next: ([supplierRes]) => {
+        forkJoin([this.supplierService.getSuppliersData(), this.costCenterService.getAllCostCenter()]).subscribe({
+            next: ([supplierRes, costCenterRes]) => {
                 this.suppliers = supplierRes.data;
+                this.costCenters = costCenterRes.data;
             },
             error: () => {
                 this.msg.add({ severity: 'error', summary: 'Error', detail: 'Fallo al cargar datos' });
@@ -81,6 +86,51 @@ export class PurchaseFormComponent implements OnInit {
                 });
             }
         });
+        this.form.get('receptionDate')?.valueChanges.subscribe((receptionDate: Date) => {
+            if (receptionDate) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const selected = new Date(receptionDate);
+                selected.setHours(0, 0, 0, 0);
+                const diffTime = selected.getTime() - today.getTime(); // ← invertido
+                const diffDays = Math.max(Math.ceil(diffTime / (1000 * 60 * 60 * 24)), 0);
+                this.form.get('deliveryDays')?.setValue(diffDays, { emitEvent: false });
+            } else {
+                this.form.get('deliveryDays')?.setValue(0, { emitEvent: false });
+            }
+        });
+        this.form.get('ceco')?.valueChanges.subscribe((cecos: any[]) => {
+            // Elimina controles antiguos
+            Object.keys(this.form.controls)
+                .filter((key) => key.startsWith('participation_'))
+                .forEach((key) => this.form.removeControl(key));
+            // Agrega un control por cada ceco seleccionado
+            cecos.forEach((cecoId) => {
+                this.form.addControl(`participation_${cecoId}`, this.fb.control(0, [Validators.required, Validators.min(0), Validators.max(100)]));
+            });
+        });
+        const ospRequest = history.state.ospRequest;
+        if (ospRequest) {
+            // Aquí puedes inicializar los campos del formulario con los datos recibidos
+            this.form.patchValue({
+                supplierId: ospRequest.preferredSupplierId
+                // Otros campos que quieras precargar...
+            });
+
+            // Si viene solo un productId, agrégalo como único ítem
+            if (ospRequest.product) {
+                this.itemsFormArray.push(
+                    this.fb.group({
+                        productId: ospRequest.product.id,
+                        name: ospRequest.product.name,
+                        unit: ospRequest.product.unit ?? '',
+                        quantity: ospRequest.requiredQuantity || ospRequest.product.unit,
+                        unitPrice: ospRequest.product.unitPrice ?? null,
+                        observations: ''
+                    })
+                );
+            }
+        }
     }
 
     private buildForm(): void {
@@ -158,5 +208,19 @@ export class PurchaseFormComponent implements OnInit {
 
     cancel(): void {
         this.router.navigate(['/purchases/orders']);
+    }
+    onUpload(event: UploadEvent) {
+        this.messageService.add({ severity: 'info', summary: 'Success', detail: 'File Uploaded with Basic Mode' });
+    }
+    // Para mostrar el label del centro de costo
+    getCecoLabel(id: number | string): string | number {
+        const ceco = this.costCenters.find((c) => c.id === id);
+        return ceco ? ceco.name : id;
+    }
+
+    // Para sumar el total de participación
+    get totalParticipation(): number {
+        const cecos = this.form.get('ceco')?.value || [];
+        return cecos.map((id: number) => this.form.get(`participation_${id}`)?.value || 0).reduce((a: number, b: number) => a + b, 0);
     }
 }

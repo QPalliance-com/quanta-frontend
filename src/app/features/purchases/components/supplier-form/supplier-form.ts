@@ -62,7 +62,6 @@ export class SupplierFormComponent implements OnInit {
             phone: ['', Validators.required],
             creditLimit: [null],
             paymentTerm: ['', Validators.required],
-            salesRep: ['', Validators.required],
             departmentId: [null, Validators.required],
             cityId: [null, Validators.required]
         });

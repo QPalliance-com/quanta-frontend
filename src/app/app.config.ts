@@ -9,6 +9,7 @@ import Material from '@primeng/themes/material';
 import { definePreset } from '@primeng/themes';
 import { CompanyService } from './features/settings/services/company.service';
 import { firstValueFrom } from 'rxjs';
+
 const MyPreset = definePreset(Material, {
     semantic: {
         colorScheme: {
@@ -67,6 +68,7 @@ export const appConfig: ApplicationConfig = {
             return firstValueFrom(companyService.loadCompany());
         }),
         provideRouter(appRoutes, withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }), withEnabledBlockingInitialNavigation()),
+
         provideHttpClient(withInterceptorsFromDi()),
         { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true },
         provideAnimationsAsync(),

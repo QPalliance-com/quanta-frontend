@@ -26,14 +26,10 @@
         <!-- 🏢 Información de la empresa -->
         <fieldset class="border p-4 rounded">
             <legend class="text-sm font-bold text-gray-600 px-2">Empresa</legend>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+            <div class="grid grid-cols-1 md:grid-cols-1 gap-4 mt-2">
                 <div>
-                    <label for="companyName" class="text-sm mb-1 block">Nombre empresa</label>
+                    <label for="companyName" class="text-sm mb-1 block w-full">Nombre empresa</label>
                     <input pInputText fluid id="companyName" formControlName="companyName" />
-                </div>
-                <div>
-                    <label for="address" class="text-sm mb-1 block">Dirección</label>
-                    <input pInputText fluid id="address" formControlName="address" />
                 </div>
             </div>
         </fieldset>
@@ -80,12 +76,18 @@
                     <p-select fluid inputId="cityId" formControlName="cityId" [options]="cities" optionLabel="name" optionValue="id" showFilter placeholder="Seleccionar ciudad"></p-select>
                 </div>
             </div>
+            <div class="grid grid-cols-1 md:grid-cols-1 gap-4 mt-2">
+                <div>
+                    <label for="address" class="text-sm mb-1 block w-full">Dirección</label>
+                    <input pInputText fluid id="address" formControlName="address" />
+                </div>
+            </div>
         </fieldset>
 
         <!-- 💳 Condiciones comerciales -->
         <fieldset class="border p-4 rounded">
             <legend class="text-sm font-bold text-gray-600 px-2">Condiciones comerciales</legend>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                 <div>
                     <label for="paymentTerm" class="text-sm mb-1 block">Plazo de pago</label>
                     <p-select fluid inputId="paymentTerm" formControlName="paymentTerm" [options]="paymentTerms" optionLabel="label" optionValue="value" showFilter placeholder="Seleccionar"></p-select>
@@ -93,10 +95,6 @@
                 <div>
                     <label for="creditLimit" class="text-sm mb-1 block">Límite de crédito</label>
                     <input pInputText fluid id="creditLimit" type="number" formControlName="creditLimit" />
-                </div>
-                <div>
-                    <label for="salesRep" class="text-sm mb-1 block">Vendedor asignado</label>
-                    <input pInputText fluid id="salesRep" formControlName="salesRep" />
                 </div>
             </div>
         </fieldset>

@@ -13,7 +13,7 @@ RUN npm install -g @angular/cli@19
 COPY package*.json ./
 RUN npm ci        # Usamos sólo npm ci, más limpio
 
-COPY . .
+COPY . . 
 
 # Compila Angular en modo producción
 RUN npm run build -- --configuration=$ENV
@@ -22,7 +22,6 @@ RUN npm run build -- --configuration=$ENV
 FROM nginx:alpine
 
 RUN rm -rf /etc/nginx/conf.d
-COPY docker/nginx.conf /etc/nginx/nginx.conf
 
 COPY --from=builder /app/dist/frontend-qp/browser /usr/share/nginx/html
 

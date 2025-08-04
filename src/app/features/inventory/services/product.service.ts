@@ -9,7 +9,7 @@ import { ApiResponse } from '../../../core/models/api-response.model';
     providedIn: 'root'
 })
 export class ProductService {
-    private readonly baseUrl = `${environment.apiUrl}settings/products`;
+    private readonly baseUrl = `${environment.apiUrl}inv/products`;
 
     constructor(private http: HttpClient) {}
 

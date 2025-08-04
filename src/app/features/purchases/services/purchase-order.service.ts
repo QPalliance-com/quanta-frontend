@@ -9,29 +9,6 @@ import { delay, map } from 'rxjs/operators';
 @Injectable({ providedIn: 'root' })
 export class PurchaseOrderService {
     private readonly baseUrl = `${environment.apiUrl}pur/purchase-orders`;
-    private products: any[] = [
-        {
-            id: 1,
-            name: 'Toner HP 85A',
-            description: 'Cartucho de tóner negro compatible con impresoras HP',
-            code: 'HP85A',
-            unitPrice: 95000
-        },
-        {
-            id: 2,
-            name: 'Resma Papel Carta 75gr',
-            description: 'Papel blanco tamaño carta 500 hojas',
-            code: 'PPC75C',
-            unitPrice: 17500
-        },
-        {
-            id: 3,
-            name: 'Mouse Logitech M190',
-            description: 'Mouse inalámbrico óptico de alta precisión',
-            code: 'LOGM190',
-            unitPrice: 38000
-        }
-    ];
 
     constructor(private http: HttpClient) {}
 
@@ -50,11 +27,5 @@ export class PurchaseOrderService {
     }
     deletePurchaseOrder(id: number): Observable<ApiResponse<void>> {
         return this.http.delete<ApiResponse<void>>(`${this.baseUrl}/${id}`);
-    }
-
-    search(query: string): Observable<any[]> {
-        const lower = query.toLowerCase();
-        const result = this.products.filter((p) => p.name.toLowerCase().includes(lower) || p.code.toLowerCase().includes(lower) || p.description.toLowerCase().includes(lower));
-        return of(result).pipe(delay(200)); // simula tiempo de red
     }
 }
