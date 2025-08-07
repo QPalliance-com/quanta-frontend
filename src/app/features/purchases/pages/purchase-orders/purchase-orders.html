@@ -1,4 +1,4 @@
-<div class="card" *ngIf="orders() && orders().length > 0">
+<div class="card" *ngIf="purchaseOrderStore.purchaseOrderList()">
     <p-toolbar styleClass="mb-12">
         <ng-template #start>
             <p-button label="Nueva orden de compra" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
@@ -11,7 +11,7 @@
     </p-toolbar>
     <p-table
         #ordersTable
-        [value]="orders()"
+        [value]="purchaseOrderStore.purchaseOrderList()"
         [paginator]="true"
         [globalFilterFields]="filterFields"
         [rows]="10"
@@ -47,8 +47,11 @@
                 <td class="px-4 py-2">{{ order.receptionDate | date: 'yyyy-MM-dd' }}</td>
                 <td class="px-4 py-2">{{ order.dueDate | date: 'yyyy-MM-dd' }}</td>
                 <td class="px-4 py-2">{{ order.deliveryDays }}</td>
-                <td class="px-4 py-2">{{ order.ceco.label }}</td>
-                <td class="px-4 py-2">{{ order.participation }}%</td>
+                <td class="px-4 py-2">
+                    <ng-container *ngFor="let ceco of order.cecos">
+                        <span class="inline-flex items-center bg-gray-100 text-gray-800 text-xs font-medium px-2 py-1 rounded mr-1"> {{ ceco.cecoName }} - {{ ceco.participation }}% </span>
+                    </ng-container>
+                </td>
                 <td class="px-4 py-2">
                     <span
                         class="px-2 py-1 rounded text-white"
@@ -72,14 +75,14 @@
     </p-table>
 </div>
 <p-confirmdialog />
-<p-dialog header="Detalle de la orden" [(visible)]="displayViewDialog" [modal]="true" [style]="{ width: '800px' }">
+<!-- <p-dialog header="Detalle de la orden" [(visible)]="displayViewDialog" [modal]="true" [style]="{ width: '800px' }">
     <div *ngIf="selectedPurchaseOrder" class="grid grid-cols-2 gap-2 text-sm">
         <div><strong>Empresa:</strong> {{ selectedPurchaseOrder.companyName }}</div>
         <div><strong>Proveedor:</strong> {{ selectedPurchaseOrder.supplierId }}</div>
         <div><strong>Recepción:</strong> {{ selectedPurchaseOrder.receptionDate | date }}</div>
         <div><strong>Vencimiento:</strong> {{ selectedPurchaseOrder.dueDate | date }}</div>
         <div><strong>Días entrega:</strong> {{ selectedPurchaseOrder.deliveryDays }}</div>
-        <div><strong>CECO:</strong> {{ selectedPurchaseOrder.ceco.label }} ({{ selectedPurchaseOrder.ceco.value }})</div>
+        <div><strong>CECO:</strong> {{ selectedPurchaseOrder.cecos.label }} ({{ selectedPurchaseOrder.ceco.value }})</div>
         <div><strong>Participación:</strong> {{ selectedPurchaseOrder.participation }}%</div>
         <div>
             <strong>Estado:</strong>
@@ -96,4 +99,4 @@
             </span>
         </div>
     </div>
-</p-dialog>
+</p-dialog> -->

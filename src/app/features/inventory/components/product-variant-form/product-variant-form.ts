@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProductVariant } from '../../models/product.model';
-
+import { CheckboxModule } from 'primeng/checkbox';
 import { TagModule } from 'primeng/tag';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
@@ -11,7 +11,7 @@ import { InputTextModule } from 'primeng/inputtext';
 @Component({
     selector: 'app-product-variant-form',
     standalone: true,
-    imports: [TagModule, CommonModule, InputTextModule, InputNumberModule, ButtonModule, ReactiveFormsModule],
+    imports: [TagModule, CheckboxModule, CommonModule, InputTextModule, InputNumberModule, ButtonModule, ReactiveFormsModule],
     templateUrl: './product-variant-form.html',
     styleUrls: ['./product-variant-form.scss']
 })
@@ -32,11 +32,12 @@ export class ProductVariantFormComponent implements OnInit {
 
     createVariationGroup(): FormGroup {
         return this.fb.group<ProductVariant>({
+            id: 0,
             idProduct: 0,
             code: '',
             unit: '',
             estimatedUnitPrice: 0,
-            variationAttributes: []
+            isActive: true
         });
     }
 }

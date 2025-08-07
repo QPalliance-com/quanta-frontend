@@ -17,16 +17,18 @@ export class ProductService {
         return this.http.get<ApiResponse<Product[]>>(`${this.baseUrl}`);
     }
 
-    getProductById(id: number): Observable<ApiResponse<Product>> {
+    getProductById(id: number | string | null): Observable<ApiResponse<Product>> {
         return this.http.get<ApiResponse<Product>>(`${this.baseUrl}/${id}`);
     }
-
+    searchProducts(query: string, limit: number = 10): Observable<ApiResponse<Product[]>> {
+        return this.http.get<ApiResponse<Product[]>>(`${this.baseUrl}/search?q=${query}&limit=${limit}`);
+    }
     createProduct(item: Product): Observable<ApiResponse<Product>> {
         return this.http.post<ApiResponse<Product>>(`${this.baseUrl}`, item);
     }
 
-    updateProduct(id: number, item: Partial<Product>): Observable<ApiResponse<Product>> {
-        return this.http.put<ApiResponse<Product>>(`${this.baseUrl}/${id}`, item);
+    updateProduct(id: number | string | null, product: Partial<Product>): Observable<ApiResponse<Product>> {
+        return this.http.put<ApiResponse<Product>>(`${this.baseUrl}/${id}`, product);
     }
 
     deleteProduct(id: number): Observable<void> {

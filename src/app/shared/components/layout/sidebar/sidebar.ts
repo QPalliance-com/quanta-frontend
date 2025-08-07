@@ -14,7 +14,7 @@ import { MenuComponent } from '../menu/menu';
 export class SidebarComponent implements OnDestroy {
     el = inject(ElementRef);
 
-    layoutService = inject(LayoutService);
+    _layoutService = inject(LayoutService);
 
     @ViewChild(MenuComponent) appMenu!: MenuComponent;
 
@@ -24,17 +24,17 @@ export class SidebarComponent implements OnDestroy {
 
     @ViewChild('menuContainer') menuContainer!: ElementRef;
 
-    overlayMenuActive = computed(() => this.layoutService.layoutState().overlayMenuActive);
+    overlayMenuActive = computed(() => this._layoutService.layoutState().overlayMenuActive);
 
-    menuProfilePosition = computed(() => this.layoutService.layoutConfig().menuProfilePosition);
+    menuProfilePosition = computed(() => this._layoutService.layoutConfig().menuProfilePosition);
 
-    anchored = computed(() => this.layoutService.layoutState().anchored);
+    anchored = computed(() => this._layoutService.layoutState().anchored);
 
     timeout: any;
 
     resetOverlay() {
         if (this.overlayMenuActive()) {
-            this.layoutService.layoutState.update((val) => ({ ...val, overlayMenuActive: false }));
+            this._layoutService.layoutState.update((val) => ({ ...val, overlayMenuActive: false }));
         }
     }
 
@@ -44,20 +44,20 @@ export class SidebarComponent implements OnDestroy {
                 clearTimeout(this.timeout);
                 this.timeout = null;
             }
-            this.layoutService.layoutState.update((val) => ({ ...val, sidebarActive: true }));
+            this._layoutService.layoutState.update((val) => ({ ...val, sidebarActive: true }));
         }
     }
 
     onMouseLeave() {
         if (!this.anchored()) {
             if (!this.timeout) {
-                this.timeout = setTimeout(() => this.layoutService.layoutState.update((val) => ({ ...val, sidebarActive: false })), 300);
+                this.timeout = setTimeout(() => this._layoutService.layoutState.update((val) => ({ ...val, sidebarActive: false })), 300);
             }
         }
     }
 
     anchor() {
-        this.layoutService.layoutState.update((val) => ({ ...val, anchored: !val.anchored }));
+        this._layoutService.layoutState.update((val) => ({ ...val, anchored: !val.anchored }));
     }
 
     ngOnDestroy() {

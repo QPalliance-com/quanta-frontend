@@ -8,11 +8,16 @@ export interface PurchaseOrder {
     receptionDate: Date | string | null;
     dueDate: Date | string | null;
     deliveryDays: number | null;
-    ceco: any | null;
+    cecos: CostCenterParticipation[] | null;
     participation: number | null;
     registryNumber: string | null;
     status: PurchaseOrderStatus | null;
     items: PurchaseOrderItem[];
     createdAt: Date | string | null;
     updatedAt?: Date | string | null;
+}
+interface CostCenterParticipation {
+    cecoId: number;
+    cecoName?: string;
+    participation: number;
 }

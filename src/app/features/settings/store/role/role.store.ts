@@ -21,11 +21,11 @@ const initialState: RoleState = {
 };
 export const RoleStore = signalStore(
     withState(initialState),
-    withMethods((store, rolesService = inject(RolesService), msg = inject(MessageService)) => ({
+    withMethods((store, _rolesService = inject(RolesService), msg = inject(MessageService)) => ({
         loadRoles: rxMethod<void>(
             pipe(
                 switchMap(() =>
-                    rolesService.getAllRoles().pipe(
+                    _rolesService.getAllRoles().pipe(
                         tapResponse({
                             next: (roles: ApiResponse<Role[]>) => {
                                 patchState(store, { Roles: roles.data });
@@ -39,7 +39,7 @@ export const RoleStore = signalStore(
         loadRole: rxMethod<{ id: number | string }>(
             pipe(
                 switchMap(({ id }) =>
-                    rolesService.getRoleById(id).pipe(
+                    _rolesService.getRoleById(id).pipe(
                         tapResponse({
                             next: (role: ApiResponse<Role>) => {
                                 patchState(store, { Role: role.data });
@@ -55,7 +55,7 @@ export const RoleStore = signalStore(
         addRole: rxMethod<Role>(
             pipe(
                 switchMap((newRole) =>
-                    rolesService.createRole(newRole).pipe(
+                    _rolesService.createRole(newRole).pipe(
                         tapResponse({
                             next: (role: ApiResponse<Role>) => {
                                 patchState(store, { Role: role.data });
@@ -70,7 +70,7 @@ export const RoleStore = signalStore(
         updateRole: rxMethod<{ role: Role; id: number | string | null }>(
             pipe(
                 switchMap(({ role, id }) =>
-                    rolesService.updateRole(id, role).pipe(
+                    _rolesService.updateRole(id, role).pipe(
                         tapResponse({
                             next: (role: ApiResponse<Role>) => {
                                 patchState(store, {

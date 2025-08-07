@@ -9,5 +9,5 @@ import { ButtonModule } from 'primeng/button';
 })
 export class FooterComponent {
     Year: number = new Date().getFullYear();
-    layoutService = inject(LayoutService);
+    _layoutService = inject(LayoutService);
 }

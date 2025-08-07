@@ -13,7 +13,7 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Proveedor</label>
-                    <p-select formControlName="supplierId" [options]="suppliers" optionLabel="companyName" optionValue="id" placeholder="Seleccione proveedor" class="w-full" />
+                    <p-select formControlName="supplierId" [options]="suppliersStore.supplierList()" optionLabel="companyName" optionValue="id" placeholder="Seleccione proveedor" class="w-full" />
                 </div>
 
                 <div>
@@ -32,26 +32,6 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Centro de costo</label>
-                    <p-multiselect [options]="costCenters" optionLabel="name" optionValue="id" display="chip" formControlName="ceco" class="w-full" placeholder="Seleccione uno o varios centros de costo"> </p-multiselect>
-                </div>
-
-                <!-- Sección: Participación por centro de costo -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Participación por centro de costo</label>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div *ngFor="let ceco of form.get('ceco')?.value; let i = index">
-                            <label class="block text-xs font-medium text-gray-700 mb-1">{{ getCecoLabel(ceco) }}</label>
-                            <p-inputNumber [min]="0" [max]="100" formControlName="participation_{{ ceco }}" suffix="%" class="w-full" placeholder="Porcentaje"></p-inputNumber>
-                        </div>
-                    </div>
-                    <div class="mt-2 text-sm" [ngClass]="{ 'text-red-500': totalParticipation !== 100, 'text-green-600': totalParticipation === 100 }">
-                        Total participación: {{ totalParticipation }}%
-                        <span *ngIf="totalParticipation !== 100"> (Debe sumar 100%)</span>
-                    </div>
-                </div>
-
-                <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
                     <p-select [disabled]="!editMode" [readonly]="!editMode" formControlName="status" [options]="statusOptions" placeholder="Seleccione estado" class="w-full" />
                 </div>
@@ -64,10 +44,46 @@
                 </div>
             </div>
         </div>
+        <!-- Sección: Centros de Costo -->
+        <div>
+            <h2 class="text-lg font-semibold mb-4">Centros de Costo</h2>
 
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Centro de costo</label>
+                <p-multiselect
+                    [options]="costCenterStore.costCenters()"
+                    optionLabel="name"
+                    optionValue="id"
+                    display="chip"
+                    class="w-full"
+                    placeholder="Seleccione uno o varios centros de costo"
+                    formControlName="cecoIds"
+                    (onChange)="onCecosSelected($event.value)"
+                >
+                </p-multiselect>
+            </div>
+
+            <div formArrayName="cecos" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div *ngFor="let ceco of cecosFormArray.controls; let i = index" [formGroupName]="i">
+                    <label class="block text-xs font-medium text-gray-700 mb-1">
+                        {{ getCecoLabel(ceco.get('cecoId')?.value) }}
+                    </label>
+                    <p-inputNumber formControlName="participation" [min]="0" [max]="100" suffix="%" class="w-full" placeholder="Porcentaje"> </p-inputNumber>
+                </div>
+                <div
+                    class="mt-2 text-sm w-full"
+                    [ngClass]="{
+                        'text-red-500': totalParticipation !== 100,
+                        'text-green-600': totalParticipation === 100
+                    }"
+                >
+                    Total participación: {{ totalParticipation }}%
+                    <span *ngIf="totalParticipation !== 100"> (Debe sumar 100%)</span>
+                </div>
+            </div>
+        </div>
         <!-- Sección: Ítems de la Orden -->
         <div>
-            <h2 class="text-lg font-semibold mb-4 mt-8">Ítems de la Orden</h2>
             <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
                 <app-purchase-items-table [itemsFormArray]="itemsFormArray" />
             </div>
@@ -76,7 +92,7 @@
         <!-- Botones -->
         <div class="flex justify-end gap-4 pt-6 border-t mt-6">
             <button pButton type="button" class="p-button-secondary" (click)="cancel()">Cancelar</button>
-            <button pButton type="submit" label="Guardar" [disabled]="form.invalid"></button>
+            <button pButton type="submit" label="Guardar"></button>
         </div>
     </form>
 </div>

@@ -2,7 +2,7 @@
     <i class="pi pi-cog"></i>
 </button>
 
-<p-drawer [(visible)]="visible" (onHide)="layoutService.hideConfigSidebar()" position="right" [transitionOptions]="'.3s cubic-bezier(0, 0, 0.2, 1)'" styleClass="layout-config-sidebar w-80" header="Settings">
+<p-drawer [(visible)]="visible" (onHide)="_layoutService.hideConfigSidebar()" position="right" [transitionOptions]="'.3s cubic-bezier(0, 0, 0.2, 1)'" styleClass="layout-config-sidebar w-80" header="Settings">
     <div class="flex flex-col gap-4">
         <div>
             <span class="text-lg font-semibold">Primary</span>

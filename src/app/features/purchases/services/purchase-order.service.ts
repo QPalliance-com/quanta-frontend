@@ -12,7 +12,7 @@ export class PurchaseOrderService {
 
     constructor(private http: HttpClient) {}
 
-    getPurchaseOrdersData(): Observable<ApiResponse<PurchaseOrder[]>> {
+    getAllPurchaseOrders(): Observable<ApiResponse<PurchaseOrder[]>> {
         return this.http.get<ApiResponse<PurchaseOrder[]>>(this.baseUrl);
     }
     getPurchaseOrderById(id: number | string): Observable<ApiResponse<PurchaseOrder>> {
@@ -22,7 +22,7 @@ export class PurchaseOrderService {
         return this.http.post<ApiResponse<PurchaseOrder>>(this.baseUrl, order);
     }
 
-    updatePurchaseOrder(id: number, order: PurchaseOrder): Observable<ApiResponse<PurchaseOrder>> {
+    updatePurchaseOrder(id: number | string, order: PurchaseOrder): Observable<ApiResponse<PurchaseOrder>> {
         return this.http.put<ApiResponse<PurchaseOrder>>(`${this.baseUrl}/${id}`, order);
     }
     deletePurchaseOrder(id: number): Observable<ApiResponse<void>> {

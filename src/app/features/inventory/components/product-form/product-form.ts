@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, effect } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../services/product.service';
@@ -18,6 +18,8 @@ import { FieldsetModule } from 'primeng/fieldset';
 import { forkJoin } from 'rxjs';
 import { ProductVariantFormComponent } from '../product-variant-form/product-variant-form';
 import { TableModule } from 'primeng/table';
+import { ProductsStore } from '../../store/products/products.store';
+import { PRODUCT_TYPE_LABELS, ProductType } from '../../../../core/enums/type-product.enum';
 
 @Component({
     selector: 'app-product-form',
@@ -43,42 +45,42 @@ import { TableModule } from 'primeng/table';
     ],
     templateUrl: './product-form.html',
     styleUrls: ['./product-form.scss'],
-    providers: [ProductService]
+    providers: [ProductsStore]
 })
 export class ProductFormComponent implements OnInit {
     form!: FormGroup;
     isEditMode = false;
     productId!: number;
-    productList: Product[] = [];
-    filteredProducts: Product[] = [];
+    productsStore = inject(ProductsStore);
     newAttribute: string = '';
     attributes: string[] = [];
     parentProductName: string = '';
-    productTypes = [
-        { label: 'Input', value: 'input' },
-        { label: 'Final Product', value: 'final_product' }
-    ];
 
+    productTypes = Object.values(ProductType).map((type) => ({
+        label: PRODUCT_TYPE_LABELS[type],
+        value: type
+    }));
     constructor(
         private fb: FormBuilder,
         private route: ActivatedRoute,
-        private router: Router,
-        private productService: ProductService
-    ) {}
+        private router: Router
+    ) {
+        effect(() => {
+            const product = this.productsStore.product();
+            if (product) {
+                this.form.patchValue(product);
+            }
+        });
+    }
 
     ngOnInit(): void {
-        forkJoin({
-            products: this.productService.getAllProductsCatalogItem()
-        }).subscribe(({ products }) => {
-            this.productList = products.data.filter((p) => !p.isVariant);
-        });
         this.buildForm();
 
         const id = this.route.snapshot.paramMap.get('id');
         if (id) {
             this.isEditMode = true;
             this.productId = +id;
-            this.loadProduct(this.productId);
+            this.productsStore.loadProductById({ id });
         }
     }
 
@@ -96,11 +98,6 @@ export class ProductFormComponent implements OnInit {
         });
     }
 
-    loadProduct(id: number): void {
-        this.productService.getProductById(id).subscribe((product) => {
-            this.form.patchValue(product.data);
-        });
-    }
     get variationsFormArray(): FormArray {
         return this.form.get('variants') as FormArray;
     }
@@ -111,13 +108,8 @@ export class ProductFormComponent implements OnInit {
         const data: Product = this.form.value;
 
         if (this.isEditMode) {
-            this.productService.updateProduct(this.productId, data).subscribe(() => {
-                this.router.navigate(['/inventory/products']);
-            });
         } else {
-            this.productService.createProduct(data).subscribe(() => {
-                this.router.navigate(['/inventory/products']);
-            });
+            this.productsStore.addProduct(data);
         }
     }
     addVariant(variant: any) {

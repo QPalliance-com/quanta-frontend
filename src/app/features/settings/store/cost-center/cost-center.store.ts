@@ -21,11 +21,11 @@ const initialState: CostCenterState = {
 };
 export const CostCenterStore = signalStore(
     withState(initialState),
-    withMethods((store, costCenterService = inject(CostCenterService), msg = inject(MessageService)) => ({
+    withMethods((store, _costCenterService = inject(CostCenterService), msg = inject(MessageService)) => ({
         loadCostCenters: rxMethod<void>(
             pipe(
                 switchMap(() =>
-                    costCenterService.getAllCostCenter().pipe(
+                    _costCenterService.getAllCostCenter().pipe(
                         tapResponse({
                             next: (costCenters: ApiResponse<CostCenter[]>) => {
                                 patchState(store, { costCenters: costCenters.data });
@@ -39,7 +39,7 @@ export const CostCenterStore = signalStore(
         loadCostCenter: rxMethod<{ id: number | string }>(
             pipe(
                 switchMap(({ id }) =>
-                    costCenterService.getCostCenter(id).pipe(
+                    _costCenterService.getCostCenter(id).pipe(
                         tapResponse({
                             next: (costCenter: ApiResponse<CostCenter>) => {
                                 console.log('🧪 CostCenter recibido:', costCenter);
@@ -56,7 +56,7 @@ export const CostCenterStore = signalStore(
         addCostCenter: rxMethod<CostCenter>(
             pipe(
                 switchMap((newCostCenter) =>
-                    costCenterService.createCostCenter(newCostCenter).pipe(
+                    _costCenterService.createCostCenter(newCostCenter).pipe(
                         tapResponse({
                             next: (costCenter: ApiResponse<CostCenter>) => {
                                 patchState(store, {
@@ -73,7 +73,7 @@ export const CostCenterStore = signalStore(
         updateCostCenter: rxMethod<{ costCenter: CostCenter; id: number | string | null }>(
             pipe(
                 switchMap(({ costCenter, id }) =>
-                    costCenterService.updateCostCenter(id, costCenter).pipe(
+                    _costCenterService.updateCostCenter(id, costCenter).pipe(
                         tapResponse({
                             next: (costCenter: ApiResponse<CostCenter>) => {
                                 patchState(store, {

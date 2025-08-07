@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, OnInit, inject, ViewChild } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
@@ -14,7 +14,6 @@ import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputTextModule } from 'primeng/inputtext';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { SupplierService } from '../../services/supplier.service';
 import { Supplier } from '../../models/supplier.model';
 import { Router } from '@angular/router';
 import { DepartmentService } from '../../../../core/services/department.service';
@@ -22,22 +21,23 @@ import { CityService } from '../../../../core/services/city.service';
 import { forkJoin } from 'rxjs';
 import { Panel, PanelModule } from 'primeng/panel';
 import { Column, ExportColumn } from '../../../../core/models/table-options.model';
+import { SupplierStore } from '../../store/supplier/supplier.store';
+import { SupplierService } from '../../services/supplier.service';
 @Component({
     selector: 'app-supplier-list',
     standalone: true,
-    imports: [CommonModule, TableModule, InputTextModule, FormsModule, ButtonModule, RippleModule, PanelModule, ToastModule, ToolbarModule, RatingModule, DialogModule, TagModule, InputIconModule, IconFieldModule, ConfirmDialogModule],
+    imports: [CommonModule, ToastModule, TableModule, InputTextModule, FormsModule, ButtonModule, RippleModule, PanelModule, ToastModule, ToolbarModule, RatingModule, DialogModule, TagModule, InputIconModule, IconFieldModule, ConfirmDialogModule],
     templateUrl: './supplier-list.html',
     styleUrl: './supplier-list.scss',
-    providers: [MessageService, SupplierService, ConfirmationService, DepartmentService, CityService]
+    providers: [MessageService, ConfirmationService, SupplierStore, DepartmentService, CityService]
 })
 export class SupplierListComponent implements OnInit {
     filterFields: string[] = ['companyName', 'contactName', 'documentType', 'documentNumber', 'email', 'address', 'phone', 'creditLimit', 'paymentTerms', 'seller', 'department.name', 'city.name'];
     exportColumns!: ExportColumn[];
     cols!: Column[];
     supplierDialog: boolean = false;
-    suppliers = signal<Supplier[]>([]);
+    suppliersStore = inject(SupplierStore);
     supplier!: Supplier;
-    selectedsuppliers!: Supplier[] | null;
     departmentsMap = new Map<number, string>();
     citiesMap = new Map<number, string>();
     msg: any;
@@ -45,9 +45,7 @@ export class SupplierListComponent implements OnInit {
     displayViewDialog = false;
     @ViewChild('suppliersTable') suppliersTable!: Table;
     constructor(
-        private supplierService: SupplierService,
         private messageService: MessageService,
-        private confirmationService: ConfirmationService,
         private router: Router,
         private departmentService: DepartmentService,
         private cityService: CityService
@@ -125,27 +123,18 @@ export class SupplierListComponent implements OnInit {
             title: col.header,
             dataKey: col.field
         }));
-        forkJoin([this.departmentService.getDepartments(), this.cityService.getAllCities(), this.supplierService.getSuppliersData()]).subscribe({
-            next: ([deptRes, cityRes, supplierRes]) => {
+        forkJoin([this.departmentService.getDepartments(), this.cityService.getAllCities()]).subscribe({
+            next: ([deptRes, cityRes]) => {
                 this.departmentsMap = new Map(deptRes.map((dep) => [dep.id, dep.name]));
                 this.citiesMap = new Map(cityRes.map((city) => [city.id, city.name]));
-                this.suppliers.set(supplierRes.data);
             },
             error: () => {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Fallo al cargar datos' });
             }
         });
+        this.suppliersStore.loadAllSuppliers();
     }
-    loadSuppliers() {
-        this.supplierService.getSuppliersData().subscribe({
-            next: (res) => {
-                this.suppliers.set(res.data);
-            },
-            error: () => {
-                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Fallo al cargar proveedores' });
-            }
-        });
-    }
+
     onGlobalFilter(table: Table, event: Event) {
         table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
     }
@@ -162,27 +151,27 @@ export class SupplierListComponent implements OnInit {
     editSupplier(supplier: Supplier) {
         this.router.navigate(['/purchases/suppliers-form/edit', supplier.id]);
     }
-    deleteSupplier(supplier: Supplier) {
-        this.confirmationService.confirm({
-            message: 'Are you sure you want to delete ' + supplier.companyName + '?',
-            header: 'Confirm',
-            icon: 'pi pi-exclamation-triangle',
-            accept: () => {
-                this.supplierService.deleteSupplier(supplier).subscribe({
-                    next: () => {
-                        this.messageService.add({
-                            severity: 'success',
-                            summary: 'Successful',
-                            detail: 'Proveedor eliminado satisfactoriamente.',
-                            life: 3000
-                        });
-                        this.loadSuppliers();
-                    },
-                    error: () => {
-                        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Fallo al eliminar proveedor' });
-                    }
-                });
-            }
-        });
-    }
+    // deleteSupplier(supplier: Supplier) {
+    //     this.confirmationService.confirm({
+    //         message: 'Are you sure you want to delete ' + supplier.companyName + '?',
+    //         header: 'Confirm',
+    //         icon: 'pi pi-exclamation-triangle',
+    //         accept: () => {
+    //             this.supplierService.deleteSupplier(supplier).subscribe({
+    //                 next: () => {
+    //                     this.messageService.add({
+    //                         severity: 'success',
+    //                         summary: 'Successful',
+    //                         detail: 'Proveedor eliminado satisfactoriamente.',
+    //                         life: 3000
+    //                     });
+    //                     this.loadSuppliers();
+    //                 },
+    //                 error: () => {
+    //                     this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Fallo al eliminar proveedor' });
+    //                 }
+    //             });
+    //         }
+    //     });
+    // }
 }

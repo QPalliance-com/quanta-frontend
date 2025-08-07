@@ -18,15 +18,15 @@ const initialState: MenuState = {
 };
 export const MenuStore = signalStore(
     withState(initialState),
-    withMethods((store, menuService = inject(MenuService), msg = inject(MessageService)) => ({
+    withMethods((store, _menuService = inject(MenuService), msg = inject(MessageService)) => ({
         loadMenu: rxMethod<void>(
             pipe(
                 switchMap(() =>
-                    menuService.getMenu().pipe(
+                    _menuService.getMenu().pipe(
                         tapResponse({
                             next: (menu: ApiResponse<MenuItem[]>) => {
                                 patchState(store, { Menu: menu.data });
-                                msg.add({ severity: 'success', summary: 'Creado', detail: menu.message, life: 3000 });
+                                // msg.add({ severity: 'success', summary: 'Creado', detail: menu.message, life: 3000 });
                             },
                             error: () => {}
                         })

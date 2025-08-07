@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, OnInit, signal, ViewChild, inject } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
@@ -16,14 +16,15 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Product } from '../../../inventory/models/product.model';
 import { Router } from '@angular/router';
-import { ProductService } from '../../services/product.service';
 import { Column, ExportColumn } from '../../../../core/models/table-options.model';
+import { ProductsStore } from '../../store/products/products.store';
+import { PRODUCT_TYPE_LABELS, ProductType } from '../../../../core/enums/type-product.enum';
 
 @Component({
     selector: 'app-product-list',
-    imports: [CommonModule, TableModule, FormsModule, InputTextModule, ButtonModule, RippleModule, ToastModule, ToolbarModule, RatingModule, DialogModule, TagModule, InputIconModule, IconFieldModule, ConfirmDialogModule],
-    providers: [MessageService, ConfirmationService],
-
+    standalone: true,
+    imports: [CommonModule, TableModule, FormsModule, ToastModule, InputTextModule, ButtonModule, RippleModule, ToastModule, ToolbarModule, RatingModule, DialogModule, TagModule, InputIconModule, IconFieldModule, ConfirmDialogModule],
+    providers: [MessageService, ConfirmationService, ProductsStore],
     templateUrl: './product-list.html',
     styleUrl: './product-list.scss'
 })
@@ -31,18 +32,15 @@ export class ProductListComponent implements OnInit {
     filterFields: string[] = ['id', 'code', 'name', 'type', 'unit', 'estimatedUnitPrice', 'defaultLocation', 'description', 'isActive'];
     exportColumns!: ExportColumn[];
     cols!: Column[];
-
-    products = signal<Product[]>([]);
-    product!: Product;
+    productsStore = inject(ProductsStore);
     selectedProducts!: Product[] | null;
     selectedProduct!: Product;
     displayViewDialog = false;
+    productTypes = Object.values(ProductType);
     @ViewChild('productsTable') productsTable!: Table;
     constructor(
         private messageService: MessageService,
-        private confirmationService: ConfirmationService,
-        private router: Router,
-        private productService: ProductService
+        private router: Router
     ) {}
     ngOnInit(): void {
         this.cols = [
@@ -56,26 +54,19 @@ export class ProductListComponent implements OnInit {
             { field: 'description', header: 'Descripción', customExportHeader: 'Description' },
             { field: 'isActive', header: 'Activo', customExportHeader: 'Active Status' }
         ];
-        this.loadProducts();
+        this.productsStore.loadAllProducts();
     }
-    loadProducts() {
-        this.productService.getAllProductsCatalogItem().subscribe({
-            next: (res) => {
-                this.products.set(res.data);
-            },
-            error: () => {
-                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Fallo al cargar productos' });
-            }
-        });
+    getProductTypeLabel(type: string): string {
+        return PRODUCT_TYPE_LABELS[type as ProductType] ?? 'Desconocido';
     }
     openNew() {
         this.router.navigate(['/inventory/products-form/new']);
     }
-    editProduct(product: Product) {
-        this.router.navigate(['/inventory/products-form/edit', product.id]);
+    editProduct(id: number | string | null) {
+        this.router.navigate(['/inventory/products-form/edit', id]);
     }
-    viewProduct(product: Product) {
-        this.product = product;
+    viewProduct(id: number | string | null) {
+        this.productsStore.loadProductById({ id });
         this.displayViewDialog = true;
     }
     exportCSV() {

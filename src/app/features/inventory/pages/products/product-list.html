@@ -1,4 +1,4 @@
-<div class="card" *ngIf="products() && products().length > 0">
+<div class="card" *ngIf="productsStore.productsList()">
     <p-toolbar styleClass="mb-12">
         <ng-template #start>
             <p-button label="Nuevo producto" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
@@ -11,7 +11,7 @@
     </p-toolbar>
     <p-table
         #productsTable
-        [value]="products()"
+        [value]="productsStore.productsList()"
         [paginator]="true"
         [globalFilterFields]="filterFields"
         [rows]="10"
@@ -44,7 +44,7 @@
                 <td>{{ product.id }}</td>
                 <td>{{ product.code }}</td>
                 <td>{{ product.name }}</td>
-                <td>{{ product.type === 'input' ? 'Input' : 'Final Product' }}</td>
+                <td>{{ getProductTypeLabel(product.type) }}</td>
                 <td>{{ product.unit }}</td>
                 <td>{{ product.estimatedUnitPrice | currency: 'COP' }}</td>
                 <td>{{ product.defaultLocation }}</td>
@@ -53,12 +53,13 @@
                     <p-tag [value]="product.isActive ? 'Si' : 'No'" [severity]="product.isActive ? 'success' : 'danger'"></p-tag>
                 </td>
                 <td>
-                    <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text" (click)="editProduct(product)"></button>
+                    <button pButton icon="pi pi-pencil" class="p-button-sm p-button-text" (click)="editProduct(product.id)"></button>
                 </td>
             </tr>
         </ng-template>
     </p-table>
 </div>
+<p-toast></p-toast>
 <p-confirmdialog />
 <!-- <p-dialog header="Detalle de la orden" [(visible)]="displayViewDialog" [modal]="true" [style]="{ width: '800px' }">
     <div *ngIf="selectedPurchaseOrder" class="grid grid-cols-2 gap-2 text-sm">

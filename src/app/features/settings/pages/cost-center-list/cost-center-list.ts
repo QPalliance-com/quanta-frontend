@@ -20,6 +20,7 @@ import { CostCenterStore } from '../../store/cost-center/cost-center.store';
 
 @Component({
     selector: 'app-cost-center-list',
+    standalone: true,
     imports: [CommonModule, TableModule, InputTextModule, ButtonModule, RippleModule, ToastModule, ToolbarModule, RatingModule, DialogModule, TagModule, InputIconModule, IconFieldModule, ConfirmDialogModule],
     providers: [MessageService, ConfirmationService, CostCenterStore],
     templateUrl: './cost-center-list.html',

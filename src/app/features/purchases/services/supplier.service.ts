@@ -4,19 +4,20 @@ import { Observable } from 'rxjs';
 import { Supplier } from '../models/supplier.model';
 import { environment } from '../../../../environments/environment';
 import { ApiResponse } from '../../../core/models/api-response.model';
-
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class SupplierService {
     private readonly baseUrl = `${environment.apiUrl}pur/suppliers`;
 
     // Fetching suppliers data
     // This method retrieves a list of suppliers from the API.
-    getSuppliersData(): Observable<ApiResponse<Supplier[]>> {
+    getAllSuppliers(): Observable<ApiResponse<Supplier[]>> {
         return this.http.get<ApiResponse<Supplier[]>>(this.baseUrl);
     }
     // Fetching a single supplier by ID
     // This method retrieves a specific supplier's details by its ID.
-    getSuppliersById(id: number): Observable<ApiResponse<Supplier>> {
+    getSupplierById(id: number | string): Observable<ApiResponse<Supplier>> {
         return this.http.get<ApiResponse<Supplier>>(`${this.baseUrl}/${id}`);
     }
     // Creating, updating, and deleting suppliers
@@ -24,7 +25,7 @@ export class SupplierService {
     createSupplier(supplier: Supplier): Observable<ApiResponse<Supplier>> {
         return this.http.post<ApiResponse<Supplier>>(this.baseUrl, supplier);
     }
-    updateSupplier(id: number, supplier: Supplier): Observable<ApiResponse<Supplier>> {
+    updateSupplier(id: number | string, supplier: Supplier): Observable<ApiResponse<Supplier>> {
         return this.http.put<ApiResponse<Supplier>>(`${this.baseUrl}/${id}`, supplier);
     }
     deleteSupplier(supplier: Supplier): Observable<ApiResponse<void>> {

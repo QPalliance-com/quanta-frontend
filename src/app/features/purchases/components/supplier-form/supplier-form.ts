@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, effect } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { InputTextModule } from 'primeng/inputtext';
@@ -8,13 +8,14 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { SelectModule } from 'primeng/select';
 import { CommonModule } from '@angular/common';
-import { SupplierService } from '../../services/supplier.service';
 import { Supplier } from '../../models/supplier.model';
 import { Department } from '../../../../core/models/department.model';
 import { City } from '../../../../core/models/city.model';
 import { DepartmentService } from '../../../../core/services/department.service';
 import { CityService } from '../../../../core/services/city.service';
 import { DocumentType, DOCUMENT_TYPE_LABELS } from '../../../../core/enums/document-type.enum';
+import { SupplierStore } from '../../store/supplier/supplier.store';
+import { SupplierService } from '../../services/supplier.service';
 
 @Component({
     selector: 'app-supplier-form',
@@ -22,7 +23,7 @@ import { DocumentType, DOCUMENT_TYPE_LABELS } from '../../../../core/enums/docum
     imports: [CommonModule, InputTextModule, ButtonModule, RatingModule, ReactiveFormsModule, ToastModule, SelectModule, RouterModule],
     templateUrl: './supplier-form.html',
     styleUrl: './supplier-form.scss',
-    providers: [MessageService, SupplierService, DepartmentService, CityService]
+    providers: [MessageService, SupplierStore, SupplierService, DepartmentService, CityService]
 })
 export class SupplierFormComponent implements OnInit {
     constructor(
@@ -30,10 +31,17 @@ export class SupplierFormComponent implements OnInit {
         private router: Router,
         private fb: FormBuilder,
         private msg: MessageService,
-        private supplierService: SupplierService,
         private departmentService: DepartmentService,
         private cityService: CityService
-    ) {}
+    ) {
+        effect(() => {
+            const supplier = this.suppliersStore.supplier();
+            if (supplier) {
+                this.form.patchValue(supplier);
+            }
+        });
+    }
+    suppliersStore = inject(SupplierStore);
     departments: Department[] = [];
     cities: City[] = [];
     documentTypes = Object.values(DocumentType).map((type) => ({
@@ -77,17 +85,11 @@ export class SupplierFormComponent implements OnInit {
             if (id) {
                 this.editMode = true;
                 this.supplierId = +id;
-                this.loadSupplier(this.supplierId);
+                this.form.patchValue(this.suppliersStore.loadSupplier({ id }));
             }
         });
     }
 
-    loadSupplier(id: number) {
-        this.supplierService.getSuppliersById(id).subscribe({
-            next: (res) => this.form.patchValue(res.data),
-            error: () => this.msg.add({ severity: 'error', summary: 'Error', detail: 'Proveedor no encontrado' })
-        });
-    }
     loadDepartments(): void {
         this.departmentService.getDepartments().subscribe({
             next: (res) => (this.departments = res),
@@ -103,20 +105,11 @@ export class SupplierFormComponent implements OnInit {
     }
     onSubmit() {
         if (this.form.invalid) return;
-
         const supplier: Supplier = this.form.value;
-
         if (this.editMode && this.supplierId !== null) {
-            this.supplierService.updateSupplier(this.supplierId, supplier).subscribe(() => {
-                this.msg.add({ severity: 'success', summary: 'Actualizado', detail: 'Proveedor actualizado correctamente', life: 3000 });
-                // this.router.navigate(['/purchases/suppliers-list']);
-            });
+            this.suppliersStore.updateSupplier({ id: this.supplierId, supplier });
         } else {
-            console.log('Creating new supplier:', supplier);
-            this.supplierService.createSupplier(supplier).subscribe(() => {
-                this.msg.add({ severity: 'success', summary: 'Creado', detail: 'Proveedor creado exitosamente', life: 3000 });
-                // this.router.navigate(['/purchases/suppliers-list']);
-            });
+            this.suppliersStore.addSupplier(supplier);
         }
     }
     cancel() {

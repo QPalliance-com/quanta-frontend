@@ -26,28 +26,28 @@ import { Subscription } from 'rxjs';
     }
 })
 export class MenuprofileComponent implements OnDestroy {
-    layoutService = inject(LayoutService);
+    _layoutService = inject(LayoutService);
 
     renderer = inject(Renderer2);
 
     el = inject(ElementRef);
 
-    isHorizontal = computed(() => this.layoutService.isHorizontal() && this.layoutService.isDesktop());
+    isHorizontal = computed(() => this._layoutService.isHorizontal() && this._layoutService.isDesktop());
 
-    menuProfileActive = computed(() => this.layoutService.layoutState().menuProfileActive);
+    menuProfileActive = computed(() => this._layoutService.layoutState().menuProfileActive);
 
-    menuProfilePosition = computed(() => this.layoutService.layoutConfig().menuProfilePosition);
+    menuProfilePosition = computed(() => this._layoutService.layoutConfig().menuProfilePosition);
 
-    isTooltipDisabled = computed(() => !this.layoutService.isSlim());
+    isTooltipDisabled = computed(() => !this._layoutService.isSlim());
 
     subscription!: Subscription;
 
     outsideClickListener: any;
 
     constructor() {
-        this.subscription = this.layoutService.overlayOpen$.subscribe(() => {
+        this.subscription = this._layoutService.overlayOpen$.subscribe(() => {
             if (this.isHorizontal() && this.menuProfileActive()) {
-                this.layoutService.layoutState.update((value) => ({ ...value, menuProfileActive: false }));
+                this._layoutService.layoutState.update((value) => ({ ...value, menuProfileActive: false }));
             }
         });
 
@@ -68,7 +68,7 @@ export class MenuprofileComponent implements OnDestroy {
                 if (this.menuProfileActive()) {
                     const isOutsideClicked = !(this.el.nativeElement.isSameNode(event.target) || this.el.nativeElement.contains(event.target));
                     if (isOutsideClicked) {
-                        this.layoutService.layoutState.update((value) => ({ ...value, menuProfileActive: false }));
+                        this._layoutService.layoutState.update((value) => ({ ...value, menuProfileActive: false }));
                     }
                 }
             });
@@ -88,6 +88,6 @@ export class MenuprofileComponent implements OnDestroy {
     }
 
     toggleMenu() {
-        this.layoutService.onMenuProfileToggle();
+        this._layoutService.onMenuProfileToggle();
     }
 }

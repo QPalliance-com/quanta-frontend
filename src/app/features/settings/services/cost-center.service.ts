@@ -25,8 +25,8 @@ export class CostCenterService {
         return this.http.post<ApiResponse<CostCenter>>(this.baseUrl, costcenter);
     }
 
-    updateCostCenter(id: number | string | null, permission: Partial<CostCenter>): Observable<ApiResponse<CostCenter>> {
-        return this.http.put<ApiResponse<CostCenter>>(`${this.baseUrl}/${id}`, permission);
+    updateCostCenter(id: number | string | null, costcenter: Partial<CostCenter>): Observable<ApiResponse<CostCenter>> {
+        return this.http.put<ApiResponse<CostCenter>>(`${this.baseUrl}/${id}`, costcenter);
     }
 
     deleteCostCenter(id: number): Observable<ApiResponse<void>> {

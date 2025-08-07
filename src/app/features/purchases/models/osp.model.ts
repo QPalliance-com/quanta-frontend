@@ -1,7 +1,7 @@
 import { Product } from '../../inventory/models/product.model';
 import { Supplier } from './supplier.model';
 
-export interface OSPRequest {
+export interface OSP {
     id: number;
     productionRequestId: number;
     product: Product;

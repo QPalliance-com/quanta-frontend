@@ -1,14 +1,16 @@
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { ApplicationConfig, APP_INITIALIZER, inject, provideAppInitializer } from '@angular/core';
+import { ApplicationConfig, inject, provideAppInitializer } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling } from '@angular/router';
 import { providePrimeNG } from 'primeng/config';
+import { firstValueFrom } from 'rxjs';
 import { appRoutes } from './app.routes';
 import { LoaderInterceptor } from './core/interceptors/loading.interceptor';
 import Material from '@primeng/themes/material';
 import { definePreset } from '@primeng/themes';
-import { CompanyService } from './features/settings/services/company.service';
-import { firstValueFrom } from 'rxjs';
+import { CompanyStore } from './features/settings/store/company.store';
+import { MessageService } from 'primeng/api';
+import { HttpErrorInterceptor } from './core/interceptors/http-error.interceptor';
 
 const MyPreset = definePreset(Material, {
     semantic: {
@@ -63,14 +65,23 @@ const MyPreset = definePreset(Material, {
 });
 export const appConfig: ApplicationConfig = {
     providers: [
+        CompanyStore,
+        MessageService,
         provideAppInitializer(() => {
-            const companyService = inject(CompanyService);
-            return firstValueFrom(companyService.loadCompany());
+            const companyStore = inject(CompanyStore);
+            return firstValueFrom(companyStore.initCompanyLoad()).catch((error) => {
+                console.error('🚫 Error de conexión al backend', error);
+            });
         }),
         provideRouter(appRoutes, withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }), withEnabledBlockingInitialNavigation()),
 
         provideHttpClient(withInterceptorsFromDi()),
         { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: HttpErrorInterceptor,
+            multi: true
+        },
         provideAnimationsAsync(),
         providePrimeNG({
             ripple: true,

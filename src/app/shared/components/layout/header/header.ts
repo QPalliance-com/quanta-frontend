@@ -1,17 +1,14 @@
-import { Component, ElementRef, inject, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, ViewChild, effect } from '@angular/core';
 import { LayoutService } from '../services/layout.service';
 import { MenuItem } from 'primeng/api';
 import { StyleClassModule } from 'primeng/styleclass';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { CompanyService } from '../../../../features/settings/services/company.service';
-import { Observable } from 'rxjs';
-import { Company } from '../../../../features/settings/models/company.model';
-import { Ripple } from 'primeng/ripple';
 import { ButtonModule } from 'primeng/button';
 import { FormsModule } from '@angular/forms';
 import { MegaMenuModule } from 'primeng/megamenu';
 import { BadgeModule } from 'primeng/badge';
+import { CompanyStore } from '../../../../features/settings/store/company.store';
 @Component({
     selector: '[app-header]',
     standalone: true,
@@ -24,7 +21,7 @@ import { BadgeModule } from 'primeng/badge';
     }
 })
 export class HeaderComponent {
-    layoutService = inject(LayoutService);
+    _layoutService = inject(LayoutService);
 
     @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
@@ -32,27 +29,25 @@ export class HeaderComponent {
 
     @ViewChild('mobileMenuButton') mobileMenuButton!: ElementRef<HTMLButtonElement>;
     items!: MenuItem[];
-    company$: Observable<Company | null>;
+    companyStore = inject(CompanyStore);
 
-    constructor(private companyService: CompanyService) {
-        this.company$ = this.companyService.company$;
-    }
+    constructor() {}
 
     toggleDarkMode() {
-        this.layoutService.layoutConfig.update((state) => ({ ...state, darkTheme: !state.darkTheme }));
+        this._layoutService.layoutConfig.update((state) => ({ ...state, darkTheme: !state.darkTheme }));
     }
     onMenuButtonClick() {
-        this.layoutService.onMenuToggle();
+        this._layoutService.onMenuToggle();
     }
 
     onRightMenuButtonClick() {
-        this.layoutService.openRightMenu();
+        this._layoutService.openRightMenu();
     }
 
     toggleConfigSidebar() {
-        let layoutState = this.layoutService.layoutState();
+        let layoutState = this._layoutService.layoutState();
 
-        if (this.layoutService.isSidebarActive()) {
+        if (this._layoutService.isSidebarActive()) {
             layoutState.overlayMenuActive = false;
             layoutState.overlaySubmenuActive = false;
             layoutState.staticMenuMobileActive = false;
@@ -60,7 +55,7 @@ export class HeaderComponent {
             layoutState.configSidebarVisible = false;
         }
         layoutState.configSidebarVisible = !layoutState.configSidebarVisible;
-        this.layoutService.layoutState.set({ ...layoutState });
+        this._layoutService.layoutState.set({ ...layoutState });
     }
 
     focusSearchInput() {
@@ -70,6 +65,6 @@ export class HeaderComponent {
     }
 
     onTopbarMenuToggle() {
-        this.layoutService.layoutState.update((val) => ({ ...val, topbarMenuActive: !val.topbarMenuActive }));
+        this._layoutService.layoutState.update((val) => ({ ...val, topbarMenuActive: !val.topbarMenuActive }));
     }
 }

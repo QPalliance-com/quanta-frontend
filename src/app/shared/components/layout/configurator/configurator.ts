@@ -49,7 +49,7 @@ export class ConfiguratorComponent {
 
     config: PrimeNG = inject(PrimeNG);
 
-    layoutService: LayoutService = inject(LayoutService);
+    _layoutService: LayoutService = inject(LayoutService);
 
     primeng = inject(PrimeNG);
 
@@ -236,59 +236,59 @@ export class ConfiguratorComponent {
     ];
 
     selectedPrimaryColor = computed(() => {
-        return this.layoutService.layoutConfig().primary;
+        return this._layoutService.layoutConfig().primary;
     });
 
     get menuMode() {
-        return this.layoutService.layoutConfig().menuMode;
+        return this._layoutService.layoutConfig().menuMode;
     }
 
     set menuMode(val: MenuMode) {
-        this.layoutService.layoutConfig.update((config) => ({
+        this._layoutService.layoutConfig.update((config) => ({
             ...config,
             menuMode: val
         }));
     }
 
     get menuTheme(): string {
-        return this.layoutService.layoutConfig().menuTheme;
+        return this._layoutService.layoutConfig().menuTheme;
     }
 
     set menuTheme(val: string) {
-        this.layoutService.layoutConfig.update((config) => ({
+        this._layoutService.layoutConfig.update((config) => ({
             ...config,
             menuTheme: val
         }));
     }
 
     get topbarTheme(): string {
-        return this.layoutService.layoutConfig().topbarTheme;
+        return this._layoutService.layoutConfig().topbarTheme;
     }
 
     set topbarTheme(val: string) {
-        this.layoutService.layoutConfig.update((config) => ({
+        this._layoutService.layoutConfig.update((config) => ({
             ...config,
             topbarTheme: val
         }));
     }
 
     get menuProfilePosition() {
-        return this.layoutService.layoutConfig().menuProfilePosition;
+        return this._layoutService.layoutConfig().menuProfilePosition;
     }
 
     set menuProfilePosition(val: string) {
-        this.layoutService.layoutConfig.update((config) => ({
+        this._layoutService.layoutConfig.update((config) => ({
             ...config,
             menuProfilePosition: val
         }));
     }
 
     get darkTheme(): boolean {
-        return this.layoutService.layoutConfig().darkTheme;
+        return this._layoutService.layoutConfig().darkTheme;
     }
 
     set darkTheme(_val: boolean) {
-        this.layoutService.layoutConfig.update((config) => ({
+        this._layoutService.layoutConfig.update((config) => ({
             ...config,
             menuTheme: _val ? 'dark' : 'light',
             darkTheme: _val
@@ -296,19 +296,19 @@ export class ConfiguratorComponent {
     }
 
     get visible() {
-        return this.layoutService.layoutState().configSidebarVisible;
+        return this._layoutService.layoutState().configSidebarVisible;
     }
 
     set visible(val: boolean) {
-        this.layoutService.layoutState.update((state) => ({
+        this._layoutService.layoutState.update((state) => ({
             ...state,
             configSidebarVisible: val
         }));
     }
 
-    isDarkTheme = computed(() => this.layoutService.layoutConfig().darkTheme);
+    isDarkTheme = computed(() => this._layoutService.layoutConfig().darkTheme);
 
-    selectedSurface = computed(() => this.layoutService.layoutConfig().surface);
+    selectedSurface = computed(() => this._layoutService.layoutConfig().surface);
 
     primaryColors = computed<SurfacesType[]>(() => {
         const presetPalette = Material.primitive;
@@ -326,7 +326,7 @@ export class ConfiguratorComponent {
     });
 
     onLayoutThemeChange(theme: string) {
-        this.layoutService.layoutConfig.update((state) => ({
+        this._layoutService.layoutConfig.update((state) => ({
             ...state,
             layoutTheme: theme
         }));
@@ -424,12 +424,12 @@ export class ConfiguratorComponent {
 
     updateColors(event: any, type: string, color: any) {
         if (type === 'primary') {
-            this.layoutService.layoutConfig.update((state) => ({
+            this._layoutService.layoutConfig.update((state) => ({
                 ...state,
                 primary: color.name
             }));
         } else if (type === 'surface') {
-            this.layoutService.layoutConfig.update((state) => ({
+            this._layoutService.layoutConfig.update((state) => ({
                 ...state,
                 surface: color.name
             }));
@@ -456,6 +456,6 @@ export class ConfiguratorComponent {
     }
 
     toggleConfigSidebar() {
-        this.layoutService.layoutState.update((val) => ({ ...val, configSidebarVisible: !val.configSidebarVisible }));
+        this._layoutService.layoutState.update((val) => ({ ...val, configSidebarVisible: !val.configSidebarVisible }));
     }
 }
