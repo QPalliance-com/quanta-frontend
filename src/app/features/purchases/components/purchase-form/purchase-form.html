@@ -33,7 +33,7 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
-                    <p-select [disabled]="!editMode" [readonly]="!editMode" formControlName="status" [options]="statusOptions" placeholder="Seleccione estado" class="w-full" />
+                    <p-select formControlName="status" [options]="statusOptions" placeholder="Seleccione estado" class="w-full" />
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
@@ -50,16 +50,8 @@
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Centro de costo</label>
-                <p-multiselect
-                    [options]="costCenterStore.costCenters()"
-                    optionLabel="name"
-                    optionValue="id"
-                    display="chip"
-                    class="w-full"
-                    placeholder="Seleccione uno o varios centros de costo"
-                    formControlName="cecoIds"
-                    (onChange)="onCecosSelected($event.value)"
-                >
+                <p-multiselect [options]="costCenterStore.costCenters()" optionValue="id" display="chip" class="w-full" placeholder="Seleccione uno o varios centros de costo" formControlName="cecoIds">
+                    <ng-template let-costCenter pTemplate="selectedItem"> {{ costCenter.code }} - {{ costCenter.name }} </ng-template>
                 </p-multiselect>
             </div>
 

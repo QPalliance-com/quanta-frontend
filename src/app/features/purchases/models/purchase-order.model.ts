@@ -10,10 +10,9 @@ export interface PurchaseOrder {
     deliveryDays: number | null;
     cecos: CostCenterParticipation[] | null;
     participation: number | null;
-    registryNumber: string | null;
     status: PurchaseOrderStatus | null;
     items: PurchaseOrderItem[];
-    createdAt: Date | string | null;
+    createdAt?: Date | string | null;
     updatedAt?: Date | string | null;
 }
 interface CostCenterParticipation {

@@ -10,7 +10,6 @@ export interface OSP {
     unit: string;
     suggestedSuppliers: SupplierOption[];
     preferredSupplierId?: number;
-    status: 'Pendiente' | 'Asignado' | 'Convertido en orden';
     deliveryDate?: string;
 }
 export interface SupplierOption extends Supplier {

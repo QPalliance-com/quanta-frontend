@@ -14,6 +14,7 @@
         [value]="OspStore.ospList()"
         [paginator]="true"
         [globalFilterFields]="filterFields"
+        [(selection)]="selectedItems"
         [rows]="10"
         [columns]="cols"
         responsiveLayout="scroll"
@@ -31,28 +32,43 @@
                     <p-inputicon styleClass="pi pi-search" />
                     <input pInputText type="text" (input)="onGlobalFilter(ospTable, $event)" placeholder="Buscar..." />
                 </p-iconfield>
+                <button pButton label="( {{ selectedItems?.length }} ) Generar Orden(es) de Compra" class="p-button-sm p-button-default" (click)="createPurchaseOrder(selectedItems!)"></button>
             </div>
         </ng-template>
         <ng-template pTemplate="header">
             <tr>
+                <th style="width: 3rem">
+                    <p-tableHeaderCheckbox />
+                </th>
                 <th *ngFor="let col of cols" [pSortableColumn]="col.field">{{ col.header }} <p-sortIcon [field]="col.field" /></th>
-                <th class="text-center">Acciones</th>
             </tr>
         </ng-template>
 
         <ng-template pTemplate="body" let-osp>
             <tr>
+                <td style="width: 3rem">
+                    <p-tableCheckbox [value]="osp" />
+                </td>
+                <td>{{ osp.id }}</td>
+                <td>{{ osp.product.code }}</td>
                 <td>{{ osp.product.name }}</td>
-                <td>{{ osp.requiredQuantity }}</td>
+                <td>{{ getProductTypeLabel(osp.product.type) }}</td>
                 <td>{{ osp.unit }}</td>
+                <td>{{ osp.requiredQuantity }}</td>
+                <td>{{ osp.product.estimatedUnitPrice | currency: 'COP' }}</td>
                 <td>
-                    <p-select appendTo="body" [options]="osp.suggestedSuppliers" [(ngModel)]="osp.preferredSupplierId" optionLabel="name" optionValue="id" placeholder="Seleccione proveedor"> </p-select>
+                    <p-select
+                        [options]="filterSuppliers(osp.suggestedSuppliers)"
+                        [(ngModel)]="osp.preferredSupplierId"
+                        appendTo="body"
+                        optionLabel="companyName"
+                        (onChange)="osp.preferredSupplierId = $event.value"
+                        optionValue="id"
+                        placeholder="Seleccione proveedor"
+                    >
+                    </p-select>
                 </td>
-                <td>{{ getDeliveryDays(osp) }}</td>
-                <td>{{ getUnitPrice(osp) | currency }}</td>
-                <td>
-                    <button pButton icon="pi pi-check" label="Generar orden" class="p-button-sm p-button-success" (click)="createPurchaseOrder(osp)"></button>
-                </td>
+                <td>{{ osp.status }}</td>
             </tr>
         </ng-template>
     </p-table>

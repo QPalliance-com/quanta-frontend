@@ -7,6 +7,7 @@ import { inject } from '@angular/core';
 import { CostCenterService } from '../../services/cost-center.service';
 import { ApiResponse } from '../../../../core/models/api-response.model';
 import { MessageService } from 'primeng/api';
+import { OrderType, sortByOrder } from '@/core/enums/order-data.enum';
 
 type CostCenterState = {
     costCenters: CostCenter[];
@@ -29,6 +30,20 @@ export const CostCenterStore = signalStore(
                         tapResponse({
                             next: (costCenters: ApiResponse<CostCenter[]>) => {
                                 patchState(store, { costCenters: costCenters.data });
+                            },
+                            error: () => {}
+                        })
+                    )
+                )
+            )
+        ),
+        loadCostCentersFormOrder: rxMethod<void>(
+            pipe(
+                switchMap(() =>
+                    _costCenterService.getAllCostCenter().pipe(
+                        tapResponse({
+                            next: (costCenters: ApiResponse<CostCenter[]>) => {
+                                patchState(store, { costCenters: sortByOrder(costCenters.data, 'name', OrderType.ASC) });
                             },
                             error: () => {}
                         })

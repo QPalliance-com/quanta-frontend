@@ -7,6 +7,7 @@ import { inject } from '@angular/core';
 import { PurchaseOrderService } from '../../services/purchase-order.service';
 import { ApiResponse } from '../../../../core/models/api-response.model';
 import { MessageService } from 'primeng/api';
+import { OSP } from '../../models/osp.model';
 
 type PurchaseOrderState = {
     purchaseOrderList: PurchaseOrder[];
@@ -19,6 +20,7 @@ const initialState: PurchaseOrderState = {
     purchaseOrder: null,
     query: ''
 };
+
 export const PurchaseOrderStore = signalStore(
     withState(initialState),
     withMethods((store, _PurchaseOrderService = inject(PurchaseOrderService), msg = inject(MessageService)) => ({
@@ -81,6 +83,37 @@ export const PurchaseOrderStore = signalStore(
                                 msg.add({ severity: 'success', summary: 'Actualizado', detail: purchaseOrder.message, life: 3000 });
                             },
                             error: () => {}
+                        })
+                    )
+                )
+            )
+        ),
+        addPurchasesFromOSP: rxMethod<OSP[]>(
+            pipe(
+                switchMap((ospList: OSP[]) =>
+                    _PurchaseOrderService.createOrdersFromOSP(ospList).pipe(
+                        tapResponse<ApiResponse<PurchaseOrder>[]>({
+                            next: (responses) => {
+                                // Actualiza el estado con las nuevas órdenes creadas
+                                const newOrders = responses.map((r) => r.data).filter(Boolean);
+                                patchState(store, {
+                                    purchaseOrderList: newOrders
+                                });
+                                msg.add({
+                                    severity: 'success',
+                                    summary: 'Órdenes creadas',
+                                    detail: `Se crearon ${newOrders.length} órdenes a partir de OSP.`,
+                                    life: 3000
+                                });
+                            },
+                            error: (err) => {
+                                msg.add({
+                                    severity: 'error',
+                                    summary: 'Error',
+                                    detail: 'No se pudieron crear las órdenes.',
+                                    life: 3000
+                                });
+                            }
                         })
                     )
                 )
