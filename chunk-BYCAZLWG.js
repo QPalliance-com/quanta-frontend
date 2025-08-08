@@ -1,0 +1,1 @@
+import{Rb as r,Za as t,ub as n,vb as s}from"./chunk-6ZUVEJ7B.js";var o=class e{static \u0275fac=function(a){return new(a||e)};static \u0275cmp=t({type:e,selectors:[["app-main-dashboard"]],decls:2,vars:0,template:function(a,m){a&1&&(n(0,"p"),r(1,"main-dashboard works!"),s())},encapsulation:2})};var b=[{path:"",component:o}];export{b as dashboardRoutes};
