@@ -55,6 +55,14 @@
                                 }
                             ]
                         },
+                        "dev": {
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.dev.ts"
+                                }
+                            ]
+                        },
                         "development": {
                             "optimization": false,
                             "extractLicenses": false,
@@ -70,7 +78,7 @@
                             "buildTarget": "quanta-frontend:build:production"
                         },
                         "qa": {
-                            "browserTarget": "quanta-frontend:build:qa"
+                            "buildTarget": "quanta-frontend:build:qa"
                         },
                         "development": {
                             "buildTarget": "quanta-frontend:build:development"
